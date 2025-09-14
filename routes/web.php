@@ -11,6 +11,10 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+Route::get('/showcase', function () {
+    return view('showcase');
+})->name('showcase');
+
 // Theme Management Routes
 Route::middleware(['web'])->prefix('themes')->name('theme.')->group(function () {
     Route::get('/', [ThemeController::class, 'index'])->name('index');
