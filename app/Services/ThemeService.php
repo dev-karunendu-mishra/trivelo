@@ -142,6 +142,16 @@ class ThemeService
     }
 
     /**
+     * Get current theme slug (static method for Blade templates)
+     */
+    public static function current(): string
+    {
+        $service = new static();
+        $theme = $service->getActiveTheme();
+        return $theme ? $theme->name : 'modern';
+    }
+
+    /**
      * Switch to a different theme design
      */
     public function switchTheme(string $themeName): bool

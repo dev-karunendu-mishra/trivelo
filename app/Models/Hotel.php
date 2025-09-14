@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -126,6 +127,30 @@ class Hotel extends Model
     public function amenities(): BelongsToMany
     {
         return $this->belongsToMany(Amenity::class, 'hotel_amenity')->withTimestamps();
+    }
+
+    /**
+     * Hotel has one location
+     */
+    public function location(): HasOne
+    {
+        return $this->hasOne(HotelLocation::class);
+    }
+
+    /**
+     * Hotel has many images
+     */
+    public function images(): HasMany
+    {
+        return $this->hasMany(HotelImage::class)->orderBy('display_order');
+    }
+
+    /**
+     * Hotel belongs to a destination
+     */
+    public function destination(): BelongsTo
+    {
+        return $this->belongsTo(Destination::class);
     }
 
     // Scopes

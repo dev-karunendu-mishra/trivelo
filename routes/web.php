@@ -5,11 +5,25 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HotelManagerController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ThemeController;
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\BookingController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// Frontend Routes
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/search', [HomeController::class, 'search'])->name('search');
+Route::get('/hotels/{id}', [HomeController::class, 'hotelDetails'])->name('hotel.details');
+Route::get('/api/destinations', [HomeController::class, 'getDestinations'])->name('api.destinations');
+
+// Booking Routes
+Route::middleware(['auth'])->prefix('booking')->name('booking.')->group(function () {
+    Route::get('/availability', [BookingController::class, 'checkAvailability'])->name('availability');
+    Route::get('/form', [BookingController::class, 'showBookingForm'])->name('form');
+    Route::post('/submit', [BookingController::class, 'submitBooking'])->name('submit');
+    Route::get('/confirmation/{booking}', [BookingController::class, 'confirmation'])->name('confirmation');
+    Route::post('/cancel/{booking}', [BookingController::class, 'cancel'])->name('cancel');
+    Route::get('/details/{booking}', [BookingController::class, 'getBookingDetails'])->name('details');
+});
 
 Route::get('/showcase', function () {
     return view('showcase');
