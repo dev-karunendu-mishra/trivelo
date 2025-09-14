@@ -1,0 +1,202 @@
+// ==========================================================================
+// Default Theme - Trivelo Hotel Booking System
+// ==========================================================================
+
+@import '../variables';
+
+// Default Theme Colors
+$primary: #007bff;
+$secondary: #6c757d;
+$success: #28a745;
+$info: #17a2b8;
+$warning: #ffc107;
+$danger: #dc3545;
+
+// Hotel-specific colors
+$hotel-accent: #ff6b35;
+$hotel-gold: #ffd700;
+$booking-success: #28a745;
+$rating-gold: #ffb400;
+
+// Neutral colors
+$white: #ffffff;
+$light-gray: #f8f9fa;
+$medium-gray: #e9ecef;
+$dark-gray: #343a40;
+$black: #000000;
+
+// Background colors
+$body-bg: #ffffff;
+$section-bg: #f8f9fa;
+$card-bg: #ffffff;
+
+// Typography
+$font-family-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-family-serif: 'Georgia', serif;
+
+// Default Theme Styles
+.theme-default {
+    --bs-primary: #{$primary};
+    --bs-secondary: #{$secondary};
+    --bs-success: #{$success};
+    --bs-info: #{$info};
+    --bs-warning: #{$warning};
+    --bs-danger: #{$danger};
+    --bs-body-bg: #{$body-bg};
+    --bs-body-color: #{$black};
+    --hotel-accent: #{$hotel-accent};
+    --hotel-gold: #{$hotel-gold};
+    --rating-gold: #{$rating-gold};
+
+    // Button overrides
+    .btn-primary {
+        background: linear-gradient(45deg, var(--bs-primary), #{lighten($primary, 10%)});
+        border: none;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(#{red($primary)}, #{green($primary)}, #{blue($primary)}, 0.3);
+        }
+    }
+
+    // Card styles
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+    }
+
+    // Hotel card styles
+    .hotel-card {
+        .hotel-image {
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+            height: 200px;
+            
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
+            
+            &:hover img {
+                transform: scale(1.05);
+            }
+        }
+        
+        .hotel-rating {
+            .rating-stars {
+                color: var(--rating-gold);
+                font-size: 1.1rem;
+            }
+        }
+
+        .price-badge {
+            background-color: var(--hotel-accent);
+            color: white;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+    }
+
+    // Navigation styles
+    .navbar {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--bs-primary) !important;
+        }
+    }
+
+    // Search form styles
+    .search-form {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            padding: 12px 16px;
+            
+            &:focus {
+                border-color: var(--bs-primary);
+                box-shadow: 0 0 0 0.2rem rgba(#{red($primary)}, #{green($primary)}, #{blue($primary)}, 0.25);
+            }
+        }
+    }
+
+    // Hero section
+    .hero-section {
+        background: linear-gradient(135deg, #{$primary} 0%, #{darken($primary, 20%)} 100%);
+        color: white;
+        padding: 100px 0;
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+    }
+
+    // Section styling
+    .section {
+        padding: 80px 0;
+        
+        &.section-gray {
+            background-color: $section-bg;
+        }
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 3rem;
+        color: $dark-gray;
+    }
+
+    // Footer styles
+    .footer {
+        background-color: $dark-gray;
+        color: $light-gray;
+        padding: 50px 0 30px;
+        
+        .footer-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: white;
+        }
+        
+        a {
+            color: $medium-gray;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            
+            &:hover {
+                color: var(--bs-primary);
+            }
+        }
+    }
+}

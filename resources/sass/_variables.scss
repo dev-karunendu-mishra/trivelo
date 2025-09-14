@@ -1,0 +1,159 @@
+// ==========================================================================
+// Theme Variables - Trivelo Hotel Booking System
+// ==========================================================================
+// Base variables that can be customized per theme
+
+// Bootstrap 5 CSS Variables Override System
+// Custom properties for dynamic theming
+
+// Theme Configuration
+$themes: (
+    'default': (
+        'primary': #007bff,
+        'secondary': #6c757d,
+        'success': #28a745,
+        'info': #17a2b8,
+        'warning': #ffc107,
+        'danger': #dc3545,
+        'light': #f8f9fa,
+        'dark': #343a40,
+        'body-bg': #ffffff,
+        'body-color': #212529,
+        'font-family-sans-serif': 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        'font-size-base': 1rem,
+        'line-height-base': 1.6,
+        'border-radius': 8px,
+        'box-shadow': '0 2px 8px rgba(0, 0, 0, 0.1)',
+        'hotel-accent': #ff6b35,
+        'hotel-gold': #ffd700,
+        'rating-gold': #ffb400
+    ),
+    'modern': (
+        'primary': #6366f1,
+        'secondary': #64748b,
+        'success': #10b981,
+        'info': #06b6d4,
+        'warning': #f59e0b,
+        'danger': #ef4444,
+        'light': #f1f5f9,
+        'dark': #0f172a,
+        'body-bg': #ffffff,
+        'body-color': #334155,
+        'font-family-sans-serif': 'Inter, system-ui, -apple-system, sans-serif',
+        'font-size-base': 1rem,
+        'line-height-base': 1.6,
+        'border-radius': 10px,
+        'box-shadow': '0 10px 25px rgba(99, 102, 241, 0.1)',
+        'hotel-accent': #ec4899,
+        'hotel-gold': #f59e0b,
+        'rating-gold': #fbbf24
+    ),
+    'luxury': (
+        'primary': #d4af37,
+        'secondary': #c0c0c0,
+        'success': #50c878,
+        'info': #6a0dad,
+        'warning': #ffd700,
+        'danger': #800020,
+        'light': #e5e4e2,
+        'dark': #0d0d0d,
+        'body-bg': #1a1a1a,
+        'body-color': #e5e4e2,
+        'font-family-sans-serif': 'Montserrat, "Helvetica Neue", sans-serif',
+        'font-family-serif': 'Playfair Display, Georgia, serif',
+        'font-size-base': 1rem,
+        'line-height-base': 1.7,
+        'border-radius': 0px,
+        'box-shadow': '0 8px 20px rgba(212, 175, 55, 0.2)',
+        'hotel-accent': #d4af37,
+        'hotel-gold': #ffd700,
+        'rating-gold': #d4af37
+    ),
+    'minimal': (
+        'primary': #000000,
+        'secondary': #9e9e9e,
+        'success': #4caf50,
+        'info': #2196f3,
+        'warning': #ff9800,
+        'danger': #f44336,
+        'light': #fafafa,
+        'dark': #212121,
+        'body-bg': #ffffff,
+        'body-color': #212121,
+        'font-family-sans-serif': 'Inter, "Helvetica Neue", Arial, sans-serif',
+        'font-size-base': 1rem,
+        'line-height-base': 1.8,
+        'border-radius': 0px,
+        'box-shadow': 'none',
+        'hotel-accent': #2196f3,
+        'hotel-gold': #ffc107,
+        'rating-gold': #000000
+    )
+);
+
+// Function to get theme value
+@function theme-value($theme-name, $property) {
+    @return map-get(map-get($themes, $theme-name), $property);
+}
+
+// Mixin to generate theme classes
+@mixin generate-theme($theme-name) {
+    $theme-map: map-get($themes, $theme-name);
+    
+    .theme-#{$theme-name} {
+        // CSS Custom Properties for dynamic theming
+        --bs-primary: #{map-get($theme-map, 'primary')};
+        --bs-secondary: #{map-get($theme-map, 'secondary')};
+        --bs-success: #{map-get($theme-map, 'success')};
+        --bs-info: #{map-get($theme-map, 'info')};
+        --bs-warning: #{map-get($theme-map, 'warning')};
+        --bs-danger: #{map-get($theme-map, 'danger')};
+        --bs-light: #{map-get($theme-map, 'light')};
+        --bs-dark: #{map-get($theme-map, 'dark')};
+        --bs-body-bg: #{map-get($theme-map, 'body-bg')};
+        --bs-body-color: #{map-get($theme-map, 'body-color')};
+        --bs-font-sans-serif: #{map-get($theme-map, 'font-family-sans-serif')};
+        --bs-body-font-size: #{map-get($theme-map, 'font-size-base')};
+        --bs-body-line-height: #{map-get($theme-map, 'line-height-base')};
+        --bs-border-radius: #{map-get($theme-map, 'border-radius')};
+        --bs-box-shadow: #{map-get($theme-map, 'box-shadow')};
+        
+        // Custom hotel-specific variables
+        --hotel-accent: #{map-get($theme-map, 'hotel-accent')};
+        --hotel-gold: #{map-get($theme-map, 'hotel-gold')};
+        --rating-gold: #{map-get($theme-map, 'rating-gold')};
+        
+        // Apply theme styles
+        background-color: var(--bs-body-bg);
+        color: var(--bs-body-color);
+        font-family: var(--bs-font-sans-serif);
+        font-size: var(--bs-body-font-size);
+        line-height: var(--bs-body-line-height);
+    }
+}
+
+// Common spacing variables
+$spacer: 1rem;
+$spacers: (
+    0: 0,
+    1: $spacer * .25,
+    2: $spacer * .5,
+    3: $spacer,
+    4: $spacer * 1.5,
+    5: $spacer * 3,
+);
+
+// Animation variables
+$transition-base: all .15s ease-in-out;
+$transition-fade: opacity .15s linear;
+$transition-collapse: height .35s ease;
+
+// Z-index levels
+$zindex-dropdown: 1000;
+$zindex-sticky: 1020;
+$zindex-fixed: 1030;
+$zindex-modal-backdrop: 1040;
+$zindex-offcanvas: 1050;
+$zindex-modal: 1060;
+$zindex-popover: 1070;
+$zindex-tooltip: 1080;

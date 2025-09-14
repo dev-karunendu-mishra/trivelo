@@ -1,0 +1,548 @@
+// ==========================================================================
+// Minimal Theme - Trivelo Hotel Booking System
+// ==========================================================================
+
+@import '../variables';
+
+// Minimal Monochrome Colors
+$minimal-black: #000000;
+$minimal-white: #ffffff;
+$minimal-gray-50: #fafafa;
+$minimal-gray-100: #f5f5f5;
+$minimal-gray-200: #eeeeee;
+$minimal-gray-300: #e0e0e0;
+$minimal-gray-400: #bdbdbd;
+$minimal-gray-500: #9e9e9e;
+$minimal-gray-600: #757575;
+$minimal-gray-700: #616161;
+$minimal-gray-800: #424242;
+$minimal-gray-900: #212121;
+
+// Accent colors (used sparingly)
+$minimal-accent: #2196f3;
+$minimal-success: #4caf50;
+$minimal-error: #f44336;
+
+// Typography
+$font-family-sans-serif: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+$font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+
+// Layout
+$minimal-max-width: 1200px;
+$minimal-container-padding: 24px;
+
+// Spacing
+$spacing-xs: 8px;
+$spacing-sm: 16px;
+$spacing-md: 24px;
+$spacing-lg: 32px;
+$spacing-xl: 48px;
+$spacing-2xl: 64px;
+$spacing-3xl: 96px;
+
+// Borders
+$border-width-thin: 1px;
+$border-width-medium: 2px;
+$border-color: $minimal-gray-200;
+
+// Minimal Theme Styles
+.theme-minimal {
+    --bs-primary: #{$minimal-black};
+    --bs-secondary: #{$minimal-gray-500};
+    --bs-success: #{$minimal-success};
+    --bs-info: #{$minimal-accent};
+    --bs-warning: #ff9800;
+    --bs-danger: #{$minimal-error};
+    --bs-body-bg: #{$minimal-white};
+    --bs-body-color: #{$minimal-black};
+    --hotel-accent: #{$minimal-accent};
+    --hotel-gold: #ffc107;
+    --rating-gold: #{$minimal-black};
+
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-family: $font-family-sans-serif;
+    line-height: 1.8;
+
+    // Minimal buttons
+    .btn-minimal, .btn-primary {
+        background: transparent;
+        border: $border-width-thin solid $minimal-black;
+        border-radius: 0;
+        padding: 12px 24px;
+        font-weight: 500;
+        color: $minimal-black;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background: $minimal-black;
+            color: $minimal-white;
+        }
+        
+        &.btn-minimal-primary, &.btn-primary-filled {
+            background: $minimal-black;
+            color: $minimal-white;
+            
+            &:hover {
+                background: transparent;
+                color: $minimal-black;
+            }
+        }
+    }
+
+    .btn-secondary {
+        background: transparent;
+        border: $border-width-thin solid $minimal-gray-600;
+        color: $minimal-gray-600;
+        
+        &:hover {
+            background: $minimal-gray-600;
+            color: $minimal-white;
+        }
+    }
+
+    // Minimal cards
+    .card, .card-minimal {
+        background: $minimal-white;
+        border: $border-width-thin solid $border-color;
+        border-radius: 0;
+        padding: $spacing-lg;
+        box-shadow: none;
+        transition: border-color 0.2s ease;
+        
+        &:hover {
+            border-color: $minimal-black;
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: $minimal-black;
+            margin-bottom: $spacing-md;
+            line-height: 1.4;
+        }
+        
+        .card-text {
+            color: $minimal-gray-600;
+            line-height: 1.8;
+        }
+
+        .card-header {
+            background: transparent;
+            border-bottom: $border-width-thin solid $border-color;
+            padding-bottom: $spacing-md;
+            margin-bottom: $spacing-md;
+        }
+
+        .card-body {
+            padding: 0;
+        }
+    }
+
+    // Minimal hotel cards
+    .hotel-card, .hotel-card-minimal {
+        background: $minimal-white;
+        border: $border-width-thin solid $border-color;
+        border-radius: 0;
+        transition: border-color 0.2s ease;
+        overflow: hidden;
+        
+        &:hover {
+            border-color: $minimal-black;
+        }
+        
+        .hotel-image {
+            border-bottom: $border-width-thin solid $border-color;
+            
+            img {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                display: block;
+                filter: grayscale(0.1);
+                transition: filter 0.3s ease;
+            }
+
+            &:hover img {
+                filter: grayscale(0);
+            }
+        }
+        
+        .hotel-content {
+            padding: $spacing-lg;
+        }
+        
+        .hotel-name {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: $minimal-black;
+            margin-bottom: $spacing-sm;
+            line-height: 1.4;
+        }
+        
+        .hotel-location {
+            font-size: 0.875rem;
+            color: $minimal-gray-600;
+            margin-bottom: $spacing-md;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .hotel-rating {
+            margin-bottom: $spacing-md;
+            
+            .rating-stars {
+                color: $minimal-black;
+                font-size: 0.875rem;
+            }
+            
+            .rating-text {
+                font-size: 0.875rem;
+                color: $minimal-gray-600;
+                margin-left: $spacing-sm;
+            }
+        }
+        
+        .hotel-price {
+            border-top: $border-width-thin solid $border-color;
+            padding-top: $spacing-md;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            
+            .price-amount {
+                font-size: 1.25rem;
+                font-weight: 500;
+                color: $minimal-black;
+            }
+            
+            .price-period {
+                font-size: 0.875rem;
+                color: $minimal-gray-600;
+            }
+        }
+
+        .availability-badge {
+            background: $minimal-gray-100;
+            color: $minimal-gray-700;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            
+            &.available {
+                background: $minimal-success;
+                color: white;
+            }
+        }
+    }
+
+    // Navigation
+    .navbar, .navbar-minimal {
+        background: $minimal-white !important;
+        border-bottom: $border-width-thin solid $border-color;
+        padding: $spacing-md 0;
+        box-shadow: none;
+        
+        .navbar-brand {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: $minimal-black !important;
+            text-decoration: none;
+        }
+        
+        .navbar-nav {
+            .nav-link {
+                color: $minimal-gray-600 !important;
+                font-size: 0.875rem;
+                font-weight: 500;
+                padding: 8px 16px;
+                transition: color 0.2s ease;
+                
+                &:hover,
+                &.active {
+                    color: $minimal-black !important;
+                }
+            }
+        }
+
+        .navbar-toggler {
+            border: $border-width-thin solid $minimal-gray-300;
+            border-radius: 0;
+            
+            &:focus {
+                box-shadow: none;
+            }
+        }
+    }
+
+    // Search form
+    .search-form {
+        background: $minimal-white;
+        border: $border-width-thin solid $border-color;
+        border-radius: 0;
+        padding: $spacing-2xl;
+        
+        .form-group {
+            margin-bottom: $spacing-lg;
+        }
+        
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: $minimal-black;
+            margin-bottom: $spacing-sm;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .form-control {
+            border: none;
+            border-bottom: $border-width-thin solid $minimal-gray-300;
+            border-radius: 0;
+            padding: 12px 0;
+            font-size: 1rem;
+            background: transparent;
+            transition: border-color 0.2s ease;
+            
+            &:focus {
+                border-color: $minimal-black;
+                box-shadow: none;
+                background: transparent;
+                outline: none;
+            }
+
+            &::placeholder {
+                color: $minimal-gray-400;
+            }
+        }
+
+        .form-select {
+            border: none;
+            border-bottom: $border-width-thin solid $minimal-gray-300;
+            border-radius: 0;
+            background: transparent;
+            
+            &:focus {
+                border-color: $minimal-black;
+                box-shadow: none;
+            }
+        }
+    }
+
+    // Hero section
+    .hero-section {
+        background: $minimal-white;
+        color: $minimal-black;
+        padding: $spacing-3xl * 2 0;
+        border-bottom: $border-width-thin solid $border-color;
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 500;
+            margin-bottom: $spacing-xl;
+            line-height: 1.2;
+            letter-spacing: -0.025em;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: $minimal-gray-600;
+            margin-bottom: $spacing-2xl;
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: $spacing-2xl;
+            margin-top: $spacing-2xl;
+            
+            .stat-item {
+                text-align: center;
+                
+                .stat-number {
+                    font-size: 2rem;
+                    font-weight: 500;
+                    color: $minimal-black;
+                    display: block;
+                }
+                
+                .stat-label {
+                    font-size: 0.875rem;
+                    color: $minimal-gray-600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                }
+            }
+        }
+    }
+
+    // Layout classes
+    .section, .section-minimal {
+        padding: $spacing-3xl 0;
+        
+        &.section-gray {
+            background-color: $minimal-gray-50;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 500;
+            color: $minimal-black;
+            text-align: center;
+            margin-bottom: $spacing-2xl;
+            line-height: 1.3;
+            letter-spacing: -0.025em;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: $minimal-gray-600;
+            text-align: center;
+            margin-bottom: $spacing-2xl;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+
+    .container, .container-minimal {
+        max-width: $minimal-max-width;
+        margin: 0 auto;
+        padding: 0 $minimal-container-padding;
+    }
+
+    // Typography utilities
+    .text-minimal-black { color: $minimal-black; }
+    .text-minimal-gray { color: $minimal-gray-600; }
+    .text-minimal-light { color: $minimal-gray-400; }
+
+    .border-minimal { border: $border-width-thin solid $border-color; }
+    .border-minimal-dark { border: $border-width-thin solid $minimal-black; }
+
+    .bg-minimal-light { background-color: $minimal-gray-50; }
+    .bg-minimal-white { background-color: $minimal-white; }
+
+    // Forms
+    .form-minimal {
+        .form-group {
+            margin-bottom: $spacing-lg;
+        }
+        
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: $minimal-black;
+            margin-bottom: $spacing-sm;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .form-control {
+            border: none;
+            border-bottom: $border-width-thin solid $minimal-gray-300;
+            border-radius: 0;
+            padding: 12px 0;
+            font-size: 1rem;
+            background: transparent;
+            transition: border-color 0.2s ease;
+            
+            &:focus {
+                border-color: $minimal-black;
+                box-shadow: none;
+                background: transparent;
+            }
+        }
+    }
+
+    // Tables
+    .table-minimal {
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            
+            th, td {
+                border: none;
+                border-bottom: $border-width-thin solid $border-color;
+                padding: $spacing-md;
+            }
+            
+            th {
+                background: $minimal-gray-50;
+                font-weight: 500;
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                letter-spacing: 0.025em;
+            }
+        }
+    }
+
+    // Footer
+    .footer {
+        background-color: $minimal-gray-50;
+        color: $minimal-gray-600;
+        padding: $spacing-2xl 0 $spacing-xl;
+        border-top: $border-width-thin solid $border-color;
+        
+        .footer-title {
+            font-weight: 500;
+            margin-bottom: $spacing-md;
+            color: $minimal-black;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        a {
+            color: $minimal-gray-600;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            
+            &:hover {
+                color: $minimal-black;
+            }
+        }
+
+        .footer-divider {
+            border: none;
+            border-top: $border-width-thin solid $border-color;
+            margin: $spacing-xl 0;
+        }
+
+        .footer-bottom {
+            font-size: 0.875rem;
+            color: $minimal-gray-500;
+            text-align: center;
+            padding-top: $spacing-lg;
+            border-top: $border-width-thin solid $border-color;
+        }
+    }
+
+    // Mobile optimizations
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2rem !important;
+        }
+        
+        .section-title {
+            font-size: 1.75rem !important;
+        }
+        
+        .hotel-card .hotel-content {
+            padding: $spacing-md !important;
+        }
+        
+        .search-form {
+            padding: $spacing-lg !important;
+        }
+
+        .hero-stats {
+            flex-direction: column;
+            gap: $spacing-lg !important;
+        }
+    }
+}

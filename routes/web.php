@@ -4,10 +4,19 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HotelManagerController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ThemeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+})->name('home');
+
+// Theme Management Routes
+Route::middleware(['web'])->prefix('themes')->name('theme.')->group(function () {
+    Route::get('/', [ThemeController::class, 'index'])->name('index');
+    Route::post('/switch', [ThemeController::class, 'switch'])->name('switch');
+    Route::get('/current', [ThemeController::class, 'current'])->name('current');
+    Route::get('/preview/{theme}', [ThemeController::class, 'preview'])->name('preview');
 });
 
 Route::get('/dashboard', function () {

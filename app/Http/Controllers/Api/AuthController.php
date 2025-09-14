@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
-class AuthController extends Controller
+class AuthController extends BaseApiController
 {
     /**
      * @OA\Post(
@@ -94,11 +96,40 @@ class AuthController extends Controller
      */
     public function login(Request $request): JsonResponse
     {
-        // Implementation will go here
-        return response()->json([
-            'success' => true,
-            'message' => 'Login endpoint - to be implemented',
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        // Revoke all existing tokens
+        $user->tokens()->delete();
+
+        // Create new token
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return $this->successResponse([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
+                'is_super_admin' => $user->isSuperAdmin(),
+                'is_hotel_manager' => $user->isHotelManager(),
+                'is_customer' => $user->isCustomer(),
+            ],
+            'token' => $token,
+            'token_type' => 'Bearer',
+        ], 'Login successful');
     }
 
     /**
@@ -166,11 +197,39 @@ class AuthController extends Controller
      */
     public function register(Request $request): JsonResponse
     {
-        // Implementation will go here
-        return response()->json([
-            'success' => true,
-            'message' => 'Register endpoint - to be implemented',
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'phone' => 'nullable|string|max:20',
+            'role' => 'sometimes|in:customer,hotel_manager',
         ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'phone' => $request->phone,
+        ]);
+
+        // Assign role (default: customer)
+        $role = $request->input('role', 'customer');
+        $user->assignRole($role);
+
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return $this->successResponse([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
+            ],
+            'token' => $token,
+            'token_type' => 'Bearer',
+        ], 'User registered successfully', 201);
     }
 
     /**
@@ -206,10 +265,77 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        // Implementation will go here
-        return response()->json([
-            'success' => true,
-            'message' => 'Logout endpoint - to be implemented',
+        $request->user()->currentAccessToken()->delete();
+
+        return $this->successResponse(null, 'Logged out successfully');
+    }
+
+    /**
+     * Get authenticated user profile.
+     */
+    public function profile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        return $this->successResponse([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'date_of_birth' => $user->date_of_birth,
+            'gender' => $user->gender,
+            'address' => $user->address,
+            'city' => $user->city,
+            'state' => $user->state,
+            'country' => $user->country,
+            'postal_code' => $user->postal_code,
+            'email_verified_at' => $user->email_verified_at,
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->getAllPermissions()->pluck('name'),
+            'is_super_admin' => $user->isSuperAdmin(),
+            'is_hotel_manager' => $user->isHotelManager(),
+            'is_customer' => $user->isCustomer(),
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+        ], 'Profile retrieved successfully');
+    }
+
+    /**
+     * Update user profile.
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'date_of_birth' => 'nullable|date',
+            'gender' => 'nullable|in:male,female,other',
+            'address' => 'nullable|string|max:500',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'country' => 'nullable|string|max:100',
+            'postal_code' => 'nullable|string|max:20',
         ]);
+
+        $user->update($request->only([
+            'name', 'phone', 'date_of_birth', 'gender',
+            'address', 'city', 'state', 'country', 'postal_code'
+        ]));
+
+        return $this->successResponse([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'date_of_birth' => $user->date_of_birth,
+            'gender' => $user->gender,
+            'address' => $user->address,
+            'city' => $user->city,
+            'state' => $user->state,
+            'country' => $user->country,
+            'postal_code' => $user->postal_code,
+        ], 'Profile updated successfully');
     }
 }

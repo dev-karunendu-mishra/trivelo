@@ -365,6 +365,267 @@
                 ]
             }
         },
+        "/api/bookings": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "List user bookings",
+                "description": "Get authenticated user's bookings with filtering and pagination",
+                "operationId": "4535e967ef15bc76dadf1efa40192f0d",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by booking status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "confirmed",
+                                "pending",
+                                "cancelled",
+                                "completed"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "hotel_id",
+                        "in": "query",
+                        "description": "Filter by hotel ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "description": "Sort field",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "created_at",
+                            "enum": [
+                                "check_in_date",
+                                "check_out_date",
+                                "created_at"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sort_direction",
+                        "in": "query",
+                        "description": "Sort direction",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "desc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bookings retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookingListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Create a new booking",
+                "description": "Create a new room booking for authenticated user",
+                "operationId": "43e6dcca842886074084b8db86af7802",
+                "requestBody": {
+                    "description": "Booking creation data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateBookingRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Booking created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookingDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or room not available",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - Only customers can create bookings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/bookings/{id}": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Get booking details",
+                "description": "Get detailed information about a specific booking",
+                "operationId": "c383a28985575aa1a16f783b2f762554",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Booking ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookingDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - Can only view own bookings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Booking not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/hotels": {
             "get": {
                 "tags": [
@@ -573,7 +834,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CreateHotelRequest"
+                                "$ref": "#/components/schemas/HotelCreateRequest"
                             }
                         }
                     }
@@ -711,7 +972,7 @@
                                         "data": {
                                             "properties": {
                                                 "hotel": {
-                                                    "$ref": "#/components/schemas/HotelDetail"
+                                                    "$ref": "#/components/schemas/Hotel"
                                                 }
                                             },
                                             "type": "object"
@@ -744,179 +1005,1171 @@
                     }
                 }
             }
+        },
+        "/api/rooms": {
+            "get": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "List rooms for a hotel",
+                "description": "Get list of active rooms for a specific hotel with filtering",
+                "operationId": "db2a0f9c242ba089e87d5ae1fa8e14c5",
+                "parameters": [
+                    {
+                        "name": "hotel_id",
+                        "in": "query",
+                        "description": "Hotel ID (required)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "room_type",
+                        "in": "query",
+                        "description": "Filter by room type",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "standard",
+                                "deluxe",
+                                "suite",
+                                "presidential"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "min_price",
+                        "in": "query",
+                        "description": "Minimum room price per night",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "max_price",
+                        "in": "query",
+                        "description": "Maximum room price per night",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "capacity",
+                        "in": "query",
+                        "description": "Minimum room capacity",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rooms retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error - hotel_id required",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Hotel not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "Create a new room",
+                "description": "Create a new room for a hotel (Hotel Manager only)",
+                "operationId": "809158a6b73bac8545f93f5b9f8a8a8a",
+                "requestBody": {
+                    "description": "Room creation data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateRoomRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Room created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - Only hotel managers can create rooms",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Hotel not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/rooms/{id}": {
+            "get": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "Get room details",
+                "description": "Get detailed information about a specific room",
+                "operationId": "b1475eb28ef61d930c8d73dce18cd23c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "Update room",
+                "description": "Update room details (Hotel Manager only)",
+                "operationId": "0c313fa83b1cc3ffd17495d103f021e2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Room update data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateRoomRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Room updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoomDetailResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - Only room owner can update",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "Delete room",
+                "description": "Delete a room (Hotel Manager only)",
+                "operationId": "4698523ee5dafa1ac652ef8ede5e96d4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized - Only room owner can delete",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/rooms/{id}/check-availability": {
+            "post": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "Check room availability",
+                "description": "Check if a room is available for the specified dates",
+                "operationId": "d70e12f7dce0cb5223708dc2bdcb266f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Room ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Date range for availability check",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "check_in",
+                                    "check_out"
+                                ],
+                                "properties": {
+                                    "check_in": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-12-01"
+                                    },
+                                    "check_out": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-12-05"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Availability check result",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Room availability checked successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "available": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "room_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "check_in": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2024-12-01"
+                                                },
+                                                "check_out": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2024-12-05"
+                                                },
+                                                "total_nights": {
+                                                    "type": "integer",
+                                                    "example": 4
+                                                },
+                                                "total_price": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 600
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
-            "Hotel": {
-                "title": "Hotel",
-                "description": "Hotel basic information",
+            "LoginRequest": {
+                "title": "Login Request",
+                "description": "User login request",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "User email address",
+                        "type": "string",
+                        "format": "email",
+                        "example": "admin@trivelo.com"
+                    },
+                    "password": {
+                        "description": "User password",
+                        "type": "string",
+                        "format": "password",
+                        "example": "password"
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterRequest": {
+                "title": "Register Request",
+                "description": "User registration request",
+                "required": [
+                    "name",
+                    "email",
+                    "password",
+                    "password_confirmation"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "User full name",
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "description": "User email address",
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "password": {
+                        "description": "User password",
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 8,
+                        "example": "password123"
+                    },
+                    "password_confirmation": {
+                        "description": "Password confirmation",
+                        "type": "string",
+                        "format": "password",
+                        "example": "password123"
+                    },
+                    "phone": {
+                        "description": "User phone number",
+                        "type": "string",
+                        "example": "+1234567890",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "HotelCreateRequest": {
+                "title": "Hotel Create Request",
+                "description": "Create hotel request",
+                "required": [
+                    "name",
+                    "email",
+                    "phone",
+                    "address",
+                    "city",
+                    "country",
+                    "star_rating"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Hotel name",
+                        "type": "string",
+                        "example": "Grand Plaza Hotel"
+                    },
+                    "description": {
+                        "description": "Hotel description",
+                        "type": "string",
+                        "example": "Luxury hotel in city center",
+                        "nullable": true
+                    },
+                    "email": {
+                        "description": "Hotel contact email",
+                        "type": "string",
+                        "format": "email",
+                        "example": "info@grandplaza.com"
+                    },
+                    "phone": {
+                        "description": "Hotel contact phone",
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "website": {
+                        "description": "Hotel website URL",
+                        "type": "string",
+                        "example": "https://grandplaza.com",
+                        "nullable": true
+                    },
+                    "address": {
+                        "description": "Hotel address",
+                        "type": "string",
+                        "example": "123 Main Street"
+                    },
+                    "city": {
+                        "description": "Hotel city",
+                        "type": "string",
+                        "example": "New York"
+                    },
+                    "state": {
+                        "description": "Hotel state",
+                        "type": "string",
+                        "example": "NY",
+                        "nullable": true
+                    },
+                    "country": {
+                        "description": "Hotel country",
+                        "type": "string",
+                        "example": "USA"
+                    },
+                    "postal_code": {
+                        "description": "Hotel postal code",
+                        "type": "string",
+                        "example": "10001",
+                        "nullable": true
+                    },
+                    "latitude": {
+                        "description": "Hotel latitude",
+                        "type": "number",
+                        "format": "float",
+                        "example": 40.7128,
+                        "nullable": true
+                    },
+                    "longitude": {
+                        "description": "Hotel longitude",
+                        "type": "number",
+                        "format": "float",
+                        "example": -74.006,
+                        "nullable": true
+                    },
+                    "star_rating": {
+                        "description": "Hotel star rating",
+                        "type": "integer",
+                        "maximum": 5,
+                        "minimum": 1,
+                        "example": 4
+                    },
+                    "check_in_time": {
+                        "description": "Check-in time",
+                        "type": "string",
+                        "format": "time",
+                        "example": "15:00"
+                    },
+                    "check_out_time": {
+                        "description": "Check-out time",
+                        "type": "string",
+                        "format": "time",
+                        "example": "11:00"
+                    },
+                    "cancellation_policy": {
+                        "description": "Cancellation policy",
+                        "type": "string",
+                        "example": "Free cancellation up to 24 hours",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "RoomCreateRequest": {
+                "title": "Room Create Request",
+                "description": "Create room request",
+                "required": [
+                    "room_number",
+                    "room_type",
+                    "price_per_night",
+                    "capacity"
+                ],
+                "properties": {
+                    "room_number": {
+                        "description": "Room number",
+                        "type": "string",
+                        "example": "101"
+                    },
+                    "room_type": {
+                        "description": "Room type",
+                        "type": "string",
+                        "enum": [
+                            "standard",
+                            "deluxe",
+                            "suite",
+                            "family",
+                            "executive"
+                        ],
+                        "example": "deluxe"
+                    },
+                    "description": {
+                        "description": "Room description",
+                        "type": "string",
+                        "example": "Spacious room with city view",
+                        "nullable": true
+                    },
+                    "price_per_night": {
+                        "description": "Price per night",
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0,
+                        "example": 150
+                    },
+                    "capacity": {
+                        "description": "Room capacity",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 2
+                    },
+                    "bed_type": {
+                        "description": "Bed type",
+                        "type": "string",
+                        "enum": [
+                            "single",
+                            "double",
+                            "queen",
+                            "king",
+                            "twin"
+                        ],
+                        "example": "king",
+                        "nullable": true
+                    },
+                    "bed_count": {
+                        "description": "Number of beds",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "bathroom_count": {
+                        "description": "Number of bathrooms",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "size_sqm": {
+                        "description": "Room size in square meters",
+                        "type": "number",
+                        "format": "float",
+                        "example": 35.5,
+                        "nullable": true
+                    },
+                    "floor_number": {
+                        "description": "Floor number",
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "has_balcony": {
+                        "description": "Has balcony",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "has_sea_view": {
+                        "description": "Has sea view",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "has_city_view": {
+                        "description": "Has city view",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_smoking_allowed": {
+                        "description": "Smoking allowed",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "is_accessible": {
+                        "description": "Wheelchair accessible",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "amenity_ids": {
+                        "description": "Array of amenity IDs",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "example": [
+                            1,
+                            2,
+                            3
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "BookingCreateRequest": {
+                "title": "Booking Create Request",
+                "description": "Create booking request",
+                "required": [
+                    "room_id",
+                    "check_in_date",
+                    "check_out_date",
+                    "guests_count"
+                ],
+                "properties": {
+                    "room_id": {
+                        "description": "Room ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "check_in_date": {
+                        "description": "Check-in date",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-12-01"
+                    },
+                    "check_out_date": {
+                        "description": "Check-out date",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-12-05"
+                    },
+                    "guests_count": {
+                        "description": "Number of guests",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 2
+                    },
+                    "special_requests": {
+                        "description": "Special requests",
+                        "type": "string",
+                        "example": "Late check-in requested",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "AvailabilityCheckRequest": {
+                "title": "Availability Check Request",
+                "description": "Room availability check request",
+                "required": [
+                    "check_in_date",
+                    "check_out_date"
+                ],
+                "properties": {
+                    "check_in_date": {
+                        "description": "Check-in date",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-12-01"
+                    },
+                    "check_out_date": {
+                        "description": "Check-out date",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-12-05"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginResponse": {
+                "title": "Login Response",
+                "description": "Successful login response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Login successful"
+                    },
+                    "data": {
+                        "properties": {
+                            "user": {
+                                "$ref": "#/components/schemas/User"
+                            },
+                            "token": {
+                                "description": "Authentication token",
+                                "type": "string",
+                                "example": "1|abcdef123456789"
+                            },
+                            "token_type": {
+                                "description": "Token type",
+                                "type": "string",
+                                "example": "Bearer"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "AvailabilityResponse": {
+                "title": "Availability Response",
+                "description": "Room availability check response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Availability checked successfully"
+                    },
+                    "data": {
+                        "properties": {
+                            "room_id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "check_in_date": {
+                                "type": "string",
+                                "format": "date",
+                                "example": "2024-12-01"
+                            },
+                            "check_out_date": {
+                                "type": "string",
+                                "format": "date",
+                                "example": "2024-12-05"
+                            },
+                            "is_available": {
+                                "type": "boolean",
+                                "example": true
+                            },
+                            "nights_count": {
+                                "type": "integer",
+                                "example": 4
+                            },
+                            "total_amount": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 600
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "Room is available for the selected dates"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "CreateHotelRequest": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/HotelCreateRequest"
+                    }
+                ]
+            },
+            "CreateRoomRequest": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/RoomCreateRequest"
+                    }
+                ]
+            },
+            "UpdateRoomRequest": {
+                "title": "Update Room Request",
+                "description": "Update room request",
+                "properties": {
+                    "room_number": {
+                        "description": "Room number",
+                        "type": "string",
+                        "example": "102"
+                    },
+                    "room_type": {
+                        "description": "Room type",
+                        "type": "string",
+                        "enum": [
+                            "standard",
+                            "deluxe",
+                            "suite",
+                            "family",
+                            "executive"
+                        ],
+                        "example": "suite"
+                    },
+                    "description": {
+                        "description": "Room description",
+                        "type": "string",
+                        "example": "Updated room description",
+                        "nullable": true
+                    },
+                    "price_per_night": {
+                        "description": "Price per night",
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0,
+                        "example": 200
+                    },
+                    "capacity": {
+                        "description": "Room capacity",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 4
+                    },
+                    "is_available": {
+                        "description": "Room availability",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "CreateBookingRequest": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/BookingCreateRequest"
+                    }
+                ]
+            },
+            "UpdateBookingRequest": {
+                "title": "Update Booking Request",
+                "description": "Update booking request",
+                "properties": {
+                    "status": {
+                        "description": "Booking status",
+                        "type": "string",
+                        "enum": [
+                            "confirmed",
+                            "pending",
+                            "cancelled",
+                            "completed"
+                        ],
+                        "example": "confirmed"
+                    },
+                    "special_requests": {
+                        "description": "Special requests",
+                        "type": "string",
+                        "example": "Updated special request",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "RoomListResponse": {
+                "title": "Room List Response",
+                "description": "Paginated room list response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Rooms retrieved successfully"
+                    },
+                    "data": {
+                        "properties": {
+                            "data": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/RoomSummary"
+                                }
+                            },
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 3
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 42
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "RoomDetailResponse": {
+                "title": "Room Detail Response",
+                "description": "Single room detail response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Room details retrieved successfully"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/RoomDetail"
+                    }
+                },
+                "type": "object"
+            },
+            "RoomSummary": {
+                "title": "Room Summary",
+                "description": "Room summary information",
                 "properties": {
                     "id": {
                         "type": "integer",
                         "example": 1
                     },
-                    "name": {
+                    "room_number": {
                         "type": "string",
-                        "example": "Grand Hotel NYC"
+                        "example": "101"
                     },
-                    "slug": {
+                    "room_type": {
                         "type": "string",
-                        "example": "grand-hotel-nyc"
+                        "example": "deluxe"
                     },
-                    "description": {
-                        "type": "string",
-                        "example": "Luxury hotel in the heart of Manhattan"
-                    },
-                    "address": {
-                        "type": "string",
-                        "example": "123 Broadway, New York, NY 10001"
-                    },
-                    "city": {
-                        "type": "string",
-                        "example": "New York"
-                    },
-                    "state": {
-                        "type": "string",
-                        "example": "NY"
-                    },
-                    "country": {
-                        "type": "string",
-                        "example": "USA"
-                    },
-                    "star_rating": {
-                        "type": "integer",
-                        "example": 4
-                    },
-                    "min_price": {
+                    "price_per_night": {
                         "type": "number",
                         "format": "float",
                         "example": 150
                     },
-                    "images": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/HotelImage"
-                        }
-                    },
-                    "amenities": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Amenity"
-                        }
-                    },
-                    "average_rating": {
-                        "type": "number",
-                        "format": "float",
-                        "example": 4.2
-                    },
-                    "total_reviews": {
+                    "capacity": {
                         "type": "integer",
-                        "example": 156
+                        "example": 2
+                    },
+                    "is_available": {
+                        "type": "boolean",
+                        "example": true
                     }
                 },
                 "type": "object"
             },
-            "HotelDetail": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/Hotel"
-                    },
-                    {
-                        "properties": {
-                            "postal_code": {
-                                "type": "string",
-                                "example": "10001"
-                            },
-                            "phone": {
-                                "type": "string",
-                                "example": "+1234567890"
-                            },
-                            "email": {
-                                "type": "string",
-                                "example": "info@grandhotel.com"
-                            },
-                            "website": {
-                                "type": "string",
-                                "example": "https://grandhotel.com"
-                            },
-                            "check_in_time": {
-                                "type": "string",
-                                "format": "time",
-                                "example": "14:00:00"
-                            },
-                            "check_out_time": {
-                                "type": "string",
-                                "format": "time",
-                                "example": "11:00:00"
-                            },
-                            "policies": {
-                                "type": "string",
-                                "example": "Cancellation policy: 24 hours..."
-                            },
-                            "latitude": {
-                                "type": "number",
-                                "format": "float",
-                                "example": 40.7589
-                            },
-                            "longitude": {
-                                "type": "number",
-                                "format": "float",
-                                "example": -73.9851
-                            },
-                            "rooms": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/components/schemas/Room"
-                                }
-                            },
-                            "reviews": {
-                                "properties": {
-                                    "average_rating": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": 4.2
-                                    },
-                                    "total_reviews": {
-                                        "type": "integer",
-                                        "example": 156
-                                    },
-                                    "rating_breakdown": {
-                                        "properties": {
-                                            "5": {
-                                                "type": "integer",
-                                                "example": 45
-                                            },
-                                            "4": {
-                                                "type": "integer",
-                                                "example": 78
-                                            },
-                                            "3": {
-                                                "type": "integer",
-                                                "example": 25
-                                            },
-                                            "2": {
-                                                "type": "integer",
-                                                "example": 6
-                                            },
-                                            "1": {
-                                                "type": "integer",
-                                                "example": 2
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        },
-                        "type": "object"
-                    }
-                ]
-            },
-            "Room": {
-                "title": "Room",
-                "description": "Room information",
+            "RoomDetail": {
+                "title": "Room Detail",
+                "description": "Detailed room information",
                 "properties": {
                     "id": {
                         "type": "integer",
@@ -926,59 +2179,763 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "name": {
+                    "room_number": {
                         "type": "string",
-                        "example": "Deluxe Room"
+                        "example": "101"
                     },
-                    "type": {
+                    "room_type": {
                         "type": "string",
-                        "enum": [
-                            "single",
-                            "double",
-                            "twin",
-                            "suite",
-                            "deluxe",
-                            "family"
-                        ],
                         "example": "deluxe"
                     },
                     "description": {
                         "type": "string",
                         "example": "Spacious room with city view"
                     },
-                    "capacity": {
-                        "type": "integer",
-                        "example": 2
-                    },
-                    "base_price": {
+                    "price_per_night": {
                         "type": "number",
                         "format": "float",
                         "example": 150
                     },
-                    "area": {
-                        "type": "number",
-                        "format": "float",
-                        "example": 25.5
+                    "capacity": {
+                        "type": "integer",
+                        "example": 2
                     },
                     "bed_type": {
                         "type": "string",
-                        "example": "King Bed"
+                        "example": "king"
                     },
-                    "quantity": {
+                    "is_available": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "hotel": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Grand Plaza Hotel"
+                            },
+                            "city": {
+                                "type": "string",
+                                "example": "New York"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "BookingListResponse": {
+                "title": "Booking List Response",
+                "description": "Paginated booking list response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Bookings retrieved successfully"
+                    },
+                    "data": {
+                        "properties": {
+                            "data": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/BookingSummary"
+                                }
+                            },
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 2
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 25
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "BookingDetailResponse": {
+                "title": "Booking Detail Response",
+                "description": "Single booking detail response",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Booking retrieved successfully"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/BookingDetail"
+                    }
+                },
+                "type": "object"
+            },
+            "BookingSummary": {
+                "title": "Booking Summary",
+                "description": "Booking summary information",
+                "properties": {
+                    "id": {
                         "type": "integer",
-                        "example": 10
+                        "example": 1
                     },
-                    "available_quantity": {
+                    "booking_reference": {
+                        "type": "string",
+                        "example": "TRV-2024-001"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "confirmed"
+                    },
+                    "check_in_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-12-01"
+                    },
+                    "check_out_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-12-05"
+                    },
+                    "total_amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 600
+                    },
+                    "hotel": {
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "example": "Grand Plaza Hotel"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "room": {
+                        "properties": {
+                            "room_number": {
+                                "type": "string",
+                                "example": "101"
+                            },
+                            "room_type": {
+                                "type": "string",
+                                "example": "deluxe"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "BookingDetail": {
+                "title": "Booking Detail",
+                "description": "Detailed booking information",
+                "properties": {
+                    "id": {
                         "type": "integer",
-                        "example": 3
+                        "example": 1
                     },
-                    "images": {
+                    "booking_reference": {
+                        "type": "string",
+                        "example": "TRV-2024-001"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "confirmed"
+                    },
+                    "check_in_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-12-01"
+                    },
+                    "check_out_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-12-05"
+                    },
+                    "total_amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 600
+                    },
+                    "guests_count": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "special_requests": {
+                        "type": "string",
+                        "example": "Late check-in requested"
+                    },
+                    "nights": {
+                        "type": "integer",
+                        "example": 4
+                    },
+                    "hotel": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Grand Plaza Hotel"
+                            },
+                            "city": {
+                                "type": "string",
+                                "example": "New York"
+                            },
+                            "address": {
+                                "type": "string",
+                                "example": "123 Main Street"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "room": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "room_number": {
+                                "type": "string",
+                                "example": "101"
+                            },
+                            "room_type": {
+                                "type": "string",
+                                "example": "deluxe"
+                            },
+                            "price_per_night": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 150
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "title": "User",
+                "description": "User model",
+                "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "email_verified_at",
+                    "created_at",
+                    "updated_at"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "User ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "User full name",
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "description": "User email address",
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255,
+                        "example": "john@example.com"
+                    },
+                    "email_verified_at": {
+                        "description": "Email verification timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "description": "User phone number",
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "+1234567890",
+                        "nullable": true
+                    },
+                    "date_of_birth": {
+                        "description": "User date of birth",
+                        "type": "string",
+                        "format": "date",
+                        "example": "1990-01-01",
+                        "nullable": true
+                    },
+                    "gender": {
+                        "description": "User gender",
+                        "type": "string",
+                        "enum": [
+                            "male",
+                            "female",
+                            "other"
+                        ],
+                        "example": "male",
+                        "nullable": true
+                    },
+                    "address": {
+                        "description": "User address",
+                        "type": "string",
+                        "example": "123 Main St",
+                        "nullable": true
+                    },
+                    "city": {
+                        "description": "User city",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "New York",
+                        "nullable": true
+                    },
+                    "state": {
+                        "description": "User state",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "NY",
+                        "nullable": true
+                    },
+                    "country": {
+                        "description": "User country",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "USA",
+                        "nullable": true
+                    },
+                    "postal_code": {
+                        "description": "User postal code",
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "10001",
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "description": "User active status",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "description": "Creation timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "description": "Last update timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "roles": {
+                        "description": "User roles",
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/RoomImage"
+                            "$ref": "#/components/schemas/Role"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Role": {
+                "title": "Role",
+                "description": "User role",
+                "required": [
+                    "id",
+                    "name",
+                    "guard_name"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Role ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Role name",
+                        "type": "string",
+                        "example": "customer"
+                    },
+                    "guard_name": {
+                        "description": "Guard name",
+                        "type": "string",
+                        "example": "web"
+                    }
+                },
+                "type": "object"
+            },
+            "Hotel": {
+                "title": "Hotel",
+                "description": "Hotel model",
+                "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "phone",
+                    "address",
+                    "city",
+                    "country",
+                    "star_rating",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Hotel ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "description": "Hotel owner/manager user ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 2
+                    },
+                    "name": {
+                        "description": "Hotel name",
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Grand Plaza Hotel"
+                    },
+                    "description": {
+                        "description": "Hotel description",
+                        "type": "string",
+                        "example": "Luxury hotel in city center",
+                        "nullable": true
+                    },
+                    "email": {
+                        "description": "Hotel contact email",
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255,
+                        "example": "info@grandplaza.com"
+                    },
+                    "phone": {
+                        "description": "Hotel contact phone",
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "+1234567890"
+                    },
+                    "website": {
+                        "description": "Hotel website URL",
+                        "type": "string",
+                        "example": "https://grandplaza.com",
+                        "nullable": true
+                    },
+                    "address": {
+                        "description": "Hotel address",
+                        "type": "string",
+                        "example": "123 Main Street"
+                    },
+                    "city": {
+                        "description": "Hotel city",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "New York"
+                    },
+                    "state": {
+                        "description": "Hotel state",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "NY",
+                        "nullable": true
+                    },
+                    "country": {
+                        "description": "Hotel country",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "USA"
+                    },
+                    "postal_code": {
+                        "description": "Hotel postal code",
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "10001",
+                        "nullable": true
+                    },
+                    "latitude": {
+                        "description": "Hotel latitude",
+                        "type": "number",
+                        "format": "float",
+                        "example": 40.7128,
+                        "nullable": true
+                    },
+                    "longitude": {
+                        "description": "Hotel longitude",
+                        "type": "number",
+                        "format": "float",
+                        "example": -74.006,
+                        "nullable": true
+                    },
+                    "star_rating": {
+                        "description": "Hotel star rating",
+                        "type": "integer",
+                        "maximum": 5,
+                        "minimum": 1,
+                        "example": 4
+                    },
+                    "check_in_time": {
+                        "description": "Check-in time",
+                        "type": "string",
+                        "format": "time",
+                        "example": "15:00:00"
+                    },
+                    "check_out_time": {
+                        "description": "Check-out time",
+                        "type": "string",
+                        "format": "time",
+                        "example": "11:00:00"
+                    },
+                    "cancellation_policy": {
+                        "description": "Cancellation policy",
+                        "type": "string",
+                        "example": "Free cancellation up to 24 hours",
+                        "nullable": true
+                    },
+                    "status": {
+                        "description": "Hotel status",
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "approved",
+                            "rejected",
+                            "suspended"
+                        ],
+                        "example": "approved"
+                    },
+                    "is_active": {
+                        "description": "Hotel active status",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "description": "Creation timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "description": "Last update timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "rooms": {
+                        "description": "Hotel rooms",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Room"
                         }
                     },
                     "amenities": {
+                        "description": "Hotel amenities",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Amenity"
+                        }
+                    },
+                    "rooms_count": {
+                        "description": "Total number of rooms",
+                        "type": "integer",
+                        "example": 50
+                    },
+                    "available_rooms_count": {
+                        "description": "Number of available rooms",
+                        "type": "integer",
+                        "example": 15
+                    },
+                    "average_rating": {
+                        "description": "Average rating",
+                        "type": "number",
+                        "format": "float",
+                        "example": 4.5
+                    },
+                    "reviews_count": {
+                        "description": "Total number of reviews",
+                        "type": "integer",
+                        "example": 125
+                    }
+                },
+                "type": "object"
+            },
+            "Room": {
+                "title": "Room",
+                "description": "Hotel room model",
+                "required": [
+                    "id",
+                    "hotel_id",
+                    "room_number",
+                    "room_type",
+                    "price_per_night",
+                    "capacity",
+                    "created_at",
+                    "updated_at"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Room ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "hotel_id": {
+                        "description": "Hotel ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "room_number": {
+                        "description": "Room number",
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "101"
+                    },
+                    "room_type": {
+                        "description": "Room type",
+                        "type": "string",
+                        "enum": [
+                            "standard",
+                            "deluxe",
+                            "suite",
+                            "family",
+                            "executive"
+                        ],
+                        "example": "deluxe"
+                    },
+                    "description": {
+                        "description": "Room description",
+                        "type": "string",
+                        "example": "Spacious room with city view",
+                        "nullable": true
+                    },
+                    "price_per_night": {
+                        "description": "Price per night",
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0,
+                        "example": 150
+                    },
+                    "capacity": {
+                        "description": "Room capacity",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 2
+                    },
+                    "bed_type": {
+                        "description": "Bed type",
+                        "type": "string",
+                        "enum": [
+                            "single",
+                            "double",
+                            "queen",
+                            "king",
+                            "twin"
+                        ],
+                        "example": "king",
+                        "nullable": true
+                    },
+                    "bed_count": {
+                        "description": "Number of beds",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "bathroom_count": {
+                        "description": "Number of bathrooms",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "size_sqm": {
+                        "description": "Room size in square meters",
+                        "type": "number",
+                        "format": "float",
+                        "example": 35.5,
+                        "nullable": true
+                    },
+                    "floor_number": {
+                        "description": "Floor number",
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "has_balcony": {
+                        "description": "Has balcony",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "has_sea_view": {
+                        "description": "Has sea view",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "has_city_view": {
+                        "description": "Has city view",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_smoking_allowed": {
+                        "description": "Smoking allowed",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "is_accessible": {
+                        "description": "Wheelchair accessible",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_available": {
+                        "description": "Room availability status",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_active": {
+                        "description": "Room active status",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "description": "Creation timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "description": "Last update timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "hotel": {
+                        "$ref": "#/components/schemas/Hotel"
+                    },
+                    "amenities": {
+                        "description": "Room amenities",
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/Amenity"
@@ -989,259 +2946,216 @@
             },
             "Booking": {
                 "title": "Booking",
-                "description": "Booking information",
+                "description": "Hotel booking model",
+                "required": [
+                    "id",
+                    "user_id",
+                    "hotel_id",
+                    "room_id",
+                    "check_in_date",
+                    "check_out_date",
+                    "guests_count",
+                    "total_amount",
+                    "status",
+                    "payment_status",
+                    "created_at",
+                    "updated_at"
+                ],
                 "properties": {
                     "id": {
+                        "description": "Booking ID",
                         "type": "integer",
+                        "format": "int64",
                         "example": 1
                     },
-                    "booking_number": {
-                        "type": "string",
-                        "example": "BK-2025-001"
-                    },
                     "user_id": {
+                        "description": "Customer user ID",
                         "type": "integer",
+                        "format": "int64",
                         "example": 1
                     },
                     "hotel_id": {
+                        "description": "Hotel ID",
                         "type": "integer",
+                        "format": "int64",
                         "example": 1
                     },
                     "room_id": {
+                        "description": "Room ID",
                         "type": "integer",
+                        "format": "int64",
                         "example": 1
+                    },
+                    "booking_reference": {
+                        "description": "Booking reference number",
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "BK-2024-001"
                     },
                     "check_in_date": {
+                        "description": "Check-in date",
                         "type": "string",
                         "format": "date",
-                        "example": "2025-10-15"
+                        "example": "2024-12-01"
                     },
                     "check_out_date": {
+                        "description": "Check-out date",
                         "type": "string",
                         "format": "date",
-                        "example": "2025-10-18"
+                        "example": "2024-12-05"
                     },
-                    "adults": {
+                    "guests_count": {
+                        "description": "Number of guests",
                         "type": "integer",
+                        "minimum": 1,
                         "example": 2
                     },
-                    "children": {
+                    "nights_count": {
+                        "description": "Number of nights",
                         "type": "integer",
-                        "example": 1
+                        "minimum": 1,
+                        "example": 4
                     },
-                    "nights": {
-                        "type": "integer",
-                        "example": 3
-                    },
-                    "room_price": {
+                    "room_rate": {
+                        "description": "Room rate per night",
                         "type": "number",
                         "format": "float",
+                        "minimum": 0,
                         "example": 150
                     },
-                    "total_amount": {
+                    "subtotal": {
+                        "description": "Subtotal amount",
                         "type": "number",
                         "format": "float",
-                        "example": 450
+                        "minimum": 0,
+                        "example": 600
                     },
                     "tax_amount": {
+                        "description": "Tax amount",
                         "type": "number",
                         "format": "float",
-                        "example": 45
+                        "minimum": 0,
+                        "example": 60
+                    },
+                    "total_amount": {
+                        "description": "Total booking amount",
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0,
+                        "example": 660
+                    },
+                    "currency": {
+                        "description": "Currency code",
+                        "type": "string",
+                        "maxLength": 3,
+                        "example": "USD"
                     },
                     "status": {
+                        "description": "Booking status",
                         "type": "string",
                         "enum": [
                             "pending",
                             "confirmed",
+                            "checked_in",
+                            "checked_out",
                             "cancelled",
-                            "completed",
-                            "no_show"
+                            "completed"
                         ],
                         "example": "confirmed"
                     },
-                    "guest_name": {
+                    "payment_status": {
+                        "description": "Payment status",
                         "type": "string",
-                        "example": "John Doe"
-                    },
-                    "guest_email": {
-                        "type": "string",
-                        "example": "john@example.com"
-                    },
-                    "guest_phone": {
-                        "type": "string",
-                        "example": "+1234567890"
+                        "enum": [
+                            "pending",
+                            "partial",
+                            "paid",
+                            "failed",
+                            "refunded"
+                        ],
+                        "example": "paid"
                     },
                     "special_requests": {
+                        "description": "Special requests",
                         "type": "string",
-                        "example": "Late check-in requested"
+                        "example": "Late check-in requested",
+                        "nullable": true
+                    },
+                    "cancelled_at": {
+                        "description": "Cancellation timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z",
+                        "nullable": true
+                    },
+                    "cancellation_reason": {
+                        "description": "Cancellation reason",
+                        "type": "string",
+                        "example": "Change of plans",
+                        "nullable": true
                     },
                     "created_at": {
+                        "description": "Creation timestamp",
                         "type": "string",
                         "format": "date-time",
-                        "example": "2025-09-14T10:30:00Z"
-                    }
-                },
-                "type": "object"
-            },
-            "Payment": {
-                "title": "Payment",
-                "description": "Payment information",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1
+                        "example": "2024-01-01T12:00:00Z"
                     },
-                    "booking_id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "payment_method": {
-                        "type": "string",
-                        "enum": [
-                            "stripe",
-                            "paypal",
-                            "bank_transfer",
-                            "cash"
-                        ],
-                        "example": "stripe"
-                    },
-                    "transaction_id": {
-                        "type": "string",
-                        "example": "pi_1234567890"
-                    },
-                    "amount": {
-                        "type": "number",
-                        "format": "float",
-                        "example": 450
-                    },
-                    "currency": {
-                        "type": "string",
-                        "example": "USD"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "pending",
-                            "completed",
-                            "failed",
-                            "refunded",
-                            "partially_refunded"
-                        ],
-                        "example": "completed"
-                    },
-                    "payment_date": {
+                    "updated_at": {
+                        "description": "Last update timestamp",
                         "type": "string",
                         "format": "date-time",
-                        "example": "2025-09-14T10:30:00Z"
-                    }
-                },
-                "type": "object"
-            },
-            "Review": {
-                "title": "Review",
-                "description": "Review information",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "booking_id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "hotel_id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "rating": {
-                        "type": "integer",
-                        "maximum": 5,
-                        "minimum": 1,
-                        "example": 5
-                    },
-                    "title": {
-                        "type": "string",
-                        "example": "Excellent stay!"
-                    },
-                    "comment": {
-                        "type": "string",
-                        "example": "The hotel exceeded our expectations..."
-                    },
-                    "cleanliness_rating": {
-                        "type": "integer",
-                        "maximum": 5,
-                        "minimum": 1,
-                        "example": 5
-                    },
-                    "service_rating": {
-                        "type": "integer",
-                        "maximum": 5,
-                        "minimum": 1,
-                        "example": 4
-                    },
-                    "location_rating": {
-                        "type": "integer",
-                        "maximum": 5,
-                        "minimum": 1,
-                        "example": 5
-                    },
-                    "value_rating": {
-                        "type": "integer",
-                        "maximum": 5,
-                        "minimum": 1,
-                        "example": 4
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "pending",
-                            "approved",
-                            "rejected"
-                        ],
-                        "example": "approved"
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2025-09-14T10:30:00Z"
+                        "example": "2024-01-01T12:00:00Z"
                     },
                     "user": {
-                        "properties": {
-                            "name": {
-                                "type": "string",
-                                "example": "John Doe"
-                            },
-                            "avatar": {
-                                "type": "string",
-                                "example": "/storage/avatars/user-1.jpg"
-                            }
-                        },
-                        "type": "object"
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "hotel": {
+                        "$ref": "#/components/schemas/Hotel"
+                    },
+                    "room": {
+                        "$ref": "#/components/schemas/Room"
+                    },
+                    "payments": {
+                        "description": "Associated payments",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Payment"
+                        }
                     }
                 },
                 "type": "object"
             },
             "Amenity": {
                 "title": "Amenity",
-                "description": "Amenity information",
+                "description": "Hotel/Room amenity model",
+                "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "created_at",
+                    "updated_at"
+                ],
                 "properties": {
                     "id": {
+                        "description": "Amenity ID",
                         "type": "integer",
+                        "format": "int64",
                         "example": 1
                     },
                     "name": {
+                        "description": "Amenity name",
                         "type": "string",
-                        "example": "WiFi"
+                        "maxLength": 100,
+                        "example": "Free WiFi"
                     },
-                    "slug": {
+                    "description": {
+                        "description": "Amenity description",
                         "type": "string",
-                        "example": "wifi"
-                    },
-                    "icon": {
-                        "type": "string",
-                        "example": "fas fa-wifi"
+                        "example": "High-speed internet access",
+                        "nullable": true
                     },
                     "type": {
+                        "description": "Amenity type",
                         "type": "string",
                         "enum": [
                             "hotel",
@@ -1249,141 +3163,426 @@
                             "both"
                         ],
                         "example": "both"
-                    }
-                },
-                "type": "object"
-            },
-            "HotelImage": {
-                "title": "Hotel Image",
-                "description": "Hotel image information",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1
                     },
-                    "image_path": {
+                    "icon": {
+                        "description": "Amenity icon",
                         "type": "string",
-                        "example": "/storage/hotels/hotel-1-main.jpg"
+                        "maxLength": 50,
+                        "example": "wifi",
+                        "nullable": true
                     },
-                    "alt_text": {
-                        "type": "string",
-                        "example": "Hotel exterior"
-                    },
-                    "is_primary": {
+                    "is_active": {
+                        "description": "Amenity active status",
                         "type": "boolean",
                         "example": true
-                    }
-                },
-                "type": "object"
-            },
-            "RoomImage": {
-                "title": "Room Image",
-                "description": "Room image information",
-                "properties": {
-                    "id": {
+                    },
+                    "sort_order": {
+                        "description": "Sort order",
                         "type": "integer",
-                        "example": 3
+                        "example": 1,
+                        "nullable": true
                     },
-                    "image_path": {
+                    "created_at": {
+                        "description": "Creation timestamp",
                         "type": "string",
-                        "example": "/storage/rooms/room-1-main.jpg"
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
                     },
-                    "alt_text": {
+                    "updated_at": {
+                        "description": "Last update timestamp",
                         "type": "string",
-                        "example": "Deluxe room"
-                    },
-                    "is_primary": {
-                        "type": "boolean",
-                        "example": true
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
                     }
                 },
                 "type": "object"
             },
-            "CreateHotelRequest": {
-                "title": "Create Hotel Request",
-                "description": "Request body for creating a new hotel",
+            "Payment": {
+                "title": "Payment",
+                "description": "Payment model",
                 "required": [
-                    "name",
-                    "address",
-                    "city",
-                    "state",
-                    "country",
-                    "phone",
-                    "email",
-                    "star_rating"
+                    "id",
+                    "booking_id",
+                    "user_id",
+                    "amount",
+                    "currency",
+                    "payment_method",
+                    "status",
+                    "created_at",
+                    "updated_at"
                 ],
                 "properties": {
-                    "name": {
-                        "type": "string",
-                        "example": "My Hotel"
+                    "id": {
+                        "description": "Payment ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
                     },
-                    "description": {
-                        "type": "string",
-                        "example": "A wonderful place to stay"
+                    "booking_id": {
+                        "description": "Booking ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
                     },
-                    "address": {
-                        "type": "string",
-                        "example": "123 Main St, City, State"
+                    "user_id": {
+                        "description": "User ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
                     },
-                    "city": {
+                    "payment_reference": {
+                        "description": "Payment reference",
                         "type": "string",
-                        "example": "City Name"
+                        "maxLength": 100,
+                        "example": "PAY-2024-001",
+                        "nullable": true
                     },
-                    "state": {
+                    "amount": {
+                        "description": "Payment amount",
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0,
+                        "example": 660
+                    },
+                    "currency": {
+                        "description": "Currency code",
                         "type": "string",
-                        "example": "State Name"
+                        "maxLength": 3,
+                        "example": "USD"
                     },
-                    "country": {
+                    "payment_method": {
+                        "description": "Payment method",
                         "type": "string",
-                        "example": "Country Name"
+                        "enum": [
+                            "credit_card",
+                            "debit_card",
+                            "paypal",
+                            "bank_transfer",
+                            "cash"
+                        ],
+                        "example": "credit_card"
                     },
-                    "postal_code": {
+                    "payment_gateway": {
+                        "description": "Payment gateway",
                         "type": "string",
-                        "example": "12345"
+                        "maxLength": 50,
+                        "example": "stripe",
+                        "nullable": true
                     },
-                    "phone": {
+                    "gateway_transaction_id": {
+                        "description": "Gateway transaction ID",
                         "type": "string",
-                        "example": "+1234567890"
+                        "maxLength": 255,
+                        "example": "txn_1234567890",
+                        "nullable": true
                     },
-                    "email": {
+                    "status": {
+                        "description": "Payment status",
                         "type": "string",
-                        "format": "email",
-                        "example": "hotel@example.com"
+                        "enum": [
+                            "pending",
+                            "completed",
+                            "failed",
+                            "cancelled",
+                            "refunded"
+                        ],
+                        "example": "completed"
                     },
-                    "website": {
+                    "paid_at": {
+                        "description": "Payment completion timestamp",
                         "type": "string",
-                        "example": "https://myhotel.com"
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z",
+                        "nullable": true
                     },
-                    "star_rating": {
+                    "failed_at": {
+                        "description": "Payment failure timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "failure_reason": {
+                        "description": "Payment failure reason",
+                        "type": "string",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "refunded_at": {
+                        "description": "Refund timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "refund_amount": {
+                        "description": "Refund amount",
+                        "type": "number",
+                        "format": "float",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "description": "Creation timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "description": "Last update timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "booking": {
+                        "$ref": "#/components/schemas/Booking"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                },
+                "type": "object"
+            },
+            "Review": {
+                "title": "Review",
+                "description": "Hotel review model",
+                "required": [
+                    "id",
+                    "user_id",
+                    "hotel_id",
+                    "booking_id",
+                    "rating",
+                    "created_at",
+                    "updated_at"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Review ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "description": "User ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "hotel_id": {
+                        "description": "Hotel ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "booking_id": {
+                        "description": "Booking ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "rating": {
+                        "description": "Rating (1-5 stars)",
                         "type": "integer",
                         "maximum": 5,
                         "minimum": 1,
                         "example": 4
                     },
-                    "check_in_time": {
+                    "title": {
+                        "description": "Review title",
                         "type": "string",
-                        "format": "time",
-                        "example": "14:00"
+                        "maxLength": 255,
+                        "example": "Great stay!",
+                        "nullable": true
                     },
-                    "check_out_time": {
+                    "comment": {
+                        "description": "Review comment",
                         "type": "string",
-                        "format": "time",
-                        "example": "11:00"
+                        "example": "The hotel was excellent with great service.",
+                        "nullable": true
                     },
-                    "policies": {
+                    "pros": {
+                        "description": "Review pros",
                         "type": "string",
-                        "example": "Hotel policies text..."
+                        "example": "Clean rooms, friendly staff",
+                        "nullable": true
                     },
-                    "amenities": {
+                    "cons": {
+                        "description": "Review cons",
+                        "type": "string",
+                        "example": "WiFi was slow",
+                        "nullable": true
+                    },
+                    "is_approved": {
+                        "description": "Review approval status",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_featured": {
+                        "description": "Featured review status",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "approved_at": {
+                        "description": "Approval timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "description": "Creation timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "description": "Last update timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "hotel": {
+                        "$ref": "#/components/schemas/Hotel"
+                    },
+                    "booking": {
+                        "$ref": "#/components/schemas/Booking"
+                    }
+                },
+                "type": "object"
+            },
+            "ApiResponse": {
+                "title": "API Response",
+                "description": "Standard API response format",
+                "properties": {
+                    "success": {
+                        "description": "Operation success status",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Response message",
+                        "type": "string",
+                        "example": "Operation completed successfully"
+                    },
+                    "data": {
+                        "description": "Response data",
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "errors": {
+                        "description": "Error details",
                         "type": "array",
                         "items": {
-                            "type": "integer"
+                            "type": "string"
+                        },
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedResponse": {
+                "title": "Paginated Response",
+                "description": "Paginated API response format",
+                "properties": {
+                    "success": {
+                        "description": "Operation success status",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Response message",
+                        "type": "string",
+                        "example": "Data retrieved successfully"
+                    },
+                    "data": {
+                        "description": "Response data items",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "pagination": {
+                        "description": "Pagination information",
+                        "properties": {
+                            "current_page": {
+                                "description": "Current page number",
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "per_page": {
+                                "description": "Items per page",
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "total": {
+                                "description": "Total number of items",
+                                "type": "integer",
+                                "example": 250
+                            },
+                            "last_page": {
+                                "description": "Last page number",
+                                "type": "integer",
+                                "example": 17
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "ErrorResponse": {
+                "title": "Error Response",
+                "description": "Error API response format",
+                "properties": {
+                    "success": {
+                        "description": "Operation success status",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "description": "Error message",
+                        "type": "string",
+                        "example": "Validation failed"
+                    },
+                    "data": {
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "errors": {
+                        "description": "Detailed error information",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
                         },
                         "example": [
-                            1,
-                            2,
-                            3
+                            "The email field is required.",
+                            "The password must be at least 8 characters."
                         ]
+                    }
+                },
+                "type": "object"
+            },
+            "SuccessResponse": {
+                "title": "Success Response",
+                "description": "Success API response format",
+                "properties": {
+                    "success": {
+                        "description": "Operation success status",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Success message",
+                        "type": "string",
+                        "example": "Operation completed successfully"
+                    },
+                    "data": {
+                        "description": "Response data",
+                        "type": "object",
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -1406,6 +3605,14 @@
         {
             "name": "Hotels",
             "description": "Hotel management endpoints"
+        },
+        {
+            "name": "Rooms",
+            "description": "Room management endpoints"
+        },
+        {
+            "name": "Bookings",
+            "description": "Booking management endpoints"
         }
     ]
 }

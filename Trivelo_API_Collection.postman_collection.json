@@ -1,0 +1,375 @@
+{
+  "info": {
+    "name": "Trivelo Hotel Booking API",
+    "description": "Complete API collection for Trivelo Hotel Booking System",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "api_url",
+      "value": "{{base_url}}/api",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\",\n  \"phone\": \"+1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/auth/register",
+              "host": ["{{api_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.token) {",
+                  "        pm.collectionVariables.set('auth_token', response.data.token);",
+                  "        console.log('Token saved: ' + response.data.token);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@trivelo.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/auth/login",
+              "host": ["{{api_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/auth/me",
+              "host": ["{{api_url}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Logout User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/auth/logout",
+              "host": ["{{api_url}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hotels",
+      "item": [
+        {
+          "name": "List Hotels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/hotels",
+              "host": ["{{api_url}}"],
+              "path": ["hotels"]
+            }
+          }
+        },
+        {
+          "name": "Search Hotels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/hotels?city=New York&star_rating=4&min_price=100&max_price=500",
+              "host": ["{{api_url}}"],
+              "path": ["hotels"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "New York"
+                },
+                {
+                  "key": "star_rating",
+                  "value": "4"
+                },
+                {
+                  "key": "min_price",
+                  "value": "100"
+                },
+                {
+                  "key": "max_price",
+                  "value": "500"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Hotel Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/hotels/1",
+              "host": ["{{api_url}}"],
+              "path": ["hotels", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Hotel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Grand Plaza Hotel\",\n  \"description\": \"Luxury hotel in city center\",\n  \"email\": \"info@grandplaza.com\",\n  \"phone\": \"+1234567890\",\n  \"website\": \"https://grandplaza.com\",\n  \"address\": \"123 Main Street\",\n  \"city\": \"New York\",\n  \"state\": \"NY\",\n  \"country\": \"USA\",\n  \"postal_code\": \"10001\",\n  \"star_rating\": 4,\n  \"check_in_time\": \"15:00\",\n  \"check_out_time\": \"11:00\",\n  \"cancellation_policy\": \"Free cancellation up to 24 hours\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/hotels",
+              "host": ["{{api_url}}"],
+              "path": ["hotels"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "List Hotel Rooms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/hotels/1/rooms",
+              "host": ["{{api_url}}"],
+              "path": ["hotels", "1", "rooms"]
+            }
+          }
+        },
+        {
+          "name": "Get Room Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/rooms/1",
+              "host": ["{{api_url}}"],
+              "path": ["rooms", "1"]
+            }
+          }
+        },
+        {
+          "name": "Check Room Availability",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"check_in_date\": \"2024-12-01\",\n  \"check_out_date\": \"2024-12-05\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/rooms/1/check-availability",
+              "host": ["{{api_url}}"],
+              "path": ["rooms", "1", "check-availability"]
+            }
+          }
+        },
+        {
+          "name": "Create Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_number\": \"101\",\n  \"room_type\": \"deluxe\",\n  \"description\": \"Spacious room with city view\",\n  \"price_per_night\": 150.00,\n  \"capacity\": 2,\n  \"bed_type\": \"king\",\n  \"bed_count\": 1,\n  \"bathroom_count\": 1,\n  \"size_sqm\": 35.5,\n  \"floor_number\": 1,\n  \"has_balcony\": true,\n  \"has_city_view\": true,\n  \"is_smoking_allowed\": false,\n  \"is_accessible\": true,\n  \"amenity_ids\": [1, 2, 3]\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/hotels/1/rooms",
+              "host": ["{{api_url}}"],
+              "path": ["hotels", "1", "rooms"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "List User Bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/bookings",
+              "host": ["{{api_url}}"],
+              "path": ["bookings"]
+            }
+          }
+        },
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": 1,\n  \"check_in_date\": \"2024-12-01\",\n  \"check_out_date\": \"2024-12-05\",\n  \"guests_count\": 2,\n  \"special_requests\": \"Late check-in requested\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/bookings",
+              "host": ["{{api_url}}"],
+              "path": ["bookings"]
+            }
+          }
+        },
+        {
+          "name": "Get Booking Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/bookings/1",
+              "host": ["{{api_url}}"],
+              "path": ["bookings", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Booking",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"special_requests\": \"Early check-in requested\",\n  \"guests_count\": 3\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/bookings/1",
+              "host": ["{{api_url}}"],
+              "path": ["bookings", "1"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/bookings/1",
+              "host": ["{{api_url}}"],
+              "path": ["bookings", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Amenities",
+      "item": [
+        {
+          "name": "List Amenities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/amenities",
+              "host": ["{{api_url}}"],
+              "path": ["amenities"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
