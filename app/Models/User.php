@@ -79,4 +79,65 @@ class User extends Authenticatable
     {
         return $this->hasRole('customer');
     }
+
+    // Model Relationships
+
+    /**
+     * User can manage hotels (for hotel managers)
+     */
+    public function hotels(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Hotel::class);
+    }
+
+    /**
+     * User has many bookings (for customers)
+     */
+    public function bookings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * User has many payments
+     */
+    public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * User has many reviews
+     */
+    public function reviews(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Get user's active bookings
+     */
+    public function activeBookings()
+    {
+        return $this->bookings()->whereNotIn('status', ['cancelled', 'checked_out']);
+    }
+
+    /**
+     * Get user's completed bookings
+     */
+    public function completedBookings()
+    {
+        return $this->bookings()->where('status', 'checked_out');
+    }
+
+    /**
+     * Get user's total spending
+     */
+    public function getTotalSpent()
+    {
+        return $this->payments()
+            ->where('status', 'completed')
+            ->where('type', 'payment')
+            ->sum('amount');
+    }
 }
