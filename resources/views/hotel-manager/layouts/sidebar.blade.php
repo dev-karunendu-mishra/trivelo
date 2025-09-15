@@ -50,7 +50,7 @@
                 @endif
             </a>
             
-            <a href="{{ route('hotel-manager.analytics') }}" 
+            <a href="{{ route('hotel-manager.analytics.dashboard') }}" 
                class="nav-link {{ request()->routeIs('hotel-manager.analytics*') ? 'active' : '' }}">
                 <i class="bi bi-graph-up"></i>
                 Analytics & Reports

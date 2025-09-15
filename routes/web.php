@@ -75,6 +75,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/chart-data/bookings', [App\Http\Controllers\Admin\AdminController::class, 'getBookingChartData'])->name('chart.bookings');
     Route::get('/chart-data/revenue-distribution', [App\Http\Controllers\Admin\AdminController::class, 'getRevenueDistribution'])->name('chart.revenue');
     
+    // Analytics & Reports
+    Route::get('/analytics', [App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics.dashboard');
+    Route::get('/analytics/api/metrics', [App\Http\Controllers\Admin\AnalyticsController::class, 'getMetrics'])->name('analytics.api.metrics');
+    Route::get('/analytics/api/trends', [App\Http\Controllers\Admin\AnalyticsController::class, 'getTrends'])->name('analytics.api.trends');
+    Route::get('/analytics/api/comparative', [App\Http\Controllers\Admin\AnalyticsController::class, 'getComparativeAnalytics'])->name('analytics.api.comparative');
+    Route::post('/analytics/generate-report', [App\Http\Controllers\Admin\AnalyticsController::class, 'generateReport'])->name('analytics.generate-report');
+    
     // Users management
     Route::get('/users', function() {
         return view('admin.users.index');
@@ -115,7 +122,12 @@ Route::middleware(['auth', 'hotel_manager'])->prefix('hotel-manager')->name('hot
     Route::get('/bookings/manual', function() { return view('hotel-manager.bookings.manual'); })->name('bookings.manual');
     
     // Analytics & Reports
-    Route::get('/analytics', [HotelManagerController::class, 'analytics'])->name('analytics');
+    Route::get('/analytics', [App\Http\Controllers\HotelManager\AnalyticsController::class, 'index'])->name('analytics.dashboard');
+    Route::get('/analytics/api/metrics', [App\Http\Controllers\HotelManager\AnalyticsController::class, 'getMetrics'])->name('analytics.api.metrics');
+    Route::get('/analytics/api/trends', [App\Http\Controllers\HotelManager\AnalyticsController::class, 'getTrends'])->name('analytics.api.trends');
+    Route::get('/analytics/api/comparative', [App\Http\Controllers\HotelManager\AnalyticsController::class, 'getComparativeAnalytics'])->name('analytics.api.comparative');
+    Route::get('/analytics/room-performance', [App\Http\Controllers\HotelManager\AnalyticsController::class, 'getRoomPerformance'])->name('analytics.room-performance');
+    Route::post('/analytics/generate-report', [App\Http\Controllers\HotelManager\AnalyticsController::class, 'generateReport'])->name('analytics.generate-report');
     
     // Guest Management
     Route::get('/guests', [HotelManagerController::class, 'guests'])->name('guests');

@@ -26,7 +26,8 @@
             
             <!-- Analytics -->
             <li class="nav-item mb-1">
-                <a href="#" class="nav-link text-white">
+                <a href="{{ route('admin.analytics.dashboard') }}" 
+                   class="nav-link text-white {{ request()->routeIs('admin.analytics*') ? 'active bg-primary' : '' }}">
                     <i class="bi bi-graph-up me-2"></i>
                     Analytics
                     <span class="badge bg-success ms-auto">New</span>
