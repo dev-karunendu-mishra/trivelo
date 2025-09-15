@@ -58,11 +58,11 @@ Route::middleware(['web'])->prefix('themes')->name('theme.')->group(function () 
 Route::get('/dashboard', function () {
     $user = auth()->user();
     
-    if ($user->hasRole('super_admin')) {
+    if ($user->role === 'admin') {
         return redirect()->route('admin.dashboard');
-    } elseif ($user->hasRole('hotel_manager')) {
+    } elseif ($user->role === 'hotel_manager') {
         return redirect()->route('hotel-manager.dashboard');
-    } elseif ($user->hasRole('customer')) {
+    } elseif ($user->role === 'customer') {
         return redirect()->route('customer.dashboard');
     }
     
@@ -70,13 +70,30 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Super Admin Routes
-Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/users', [AdminController::class, 'users'])->name('users');
-    Route::get('/users/{user}', [AdminController::class, 'showUser'])->name('users.show');
-    Route::post('/users/{user}/assign-role', [AdminController::class, 'assignRole'])->name('users.assign-role');
-    Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('users.toggle-status');
-    Route::get('/roles-permissions', [AdminController::class, 'rolesPermissions'])->name('roles-permissions');
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Admin\AdminController::class, 'index'])->name('dashboard');
+    Route::get('/chart-data/bookings', [App\Http\Controllers\Admin\AdminController::class, 'getBookingChartData'])->name('chart.bookings');
+    Route::get('/chart-data/revenue-distribution', [App\Http\Controllers\Admin\AdminController::class, 'getRevenueDistribution'])->name('chart.revenue');
+    
+    // Users management
+    Route::get('/users', function() {
+        return view('admin.users.index');
+    })->name('users');
+    
+    // Hotels management
+    Route::get('/hotels', function() {
+        return view('admin.hotels.index');
+    })->name('hotels');
+    
+    // Bookings management
+    Route::get('/bookings', function() {
+        return view('admin.bookings.index');
+    })->name('bookings');
+    
+    // Reports
+    Route::get('/reports', function() {
+        return view('admin.reports.index');
+    })->name('reports');
 });
 
 // Hotel Manager Routes
