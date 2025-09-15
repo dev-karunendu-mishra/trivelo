@@ -14,6 +14,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/hotels/{id}', [HomeController::class, 'hotelDetails'])->name('hotel.details');
 Route::get('/api/destinations', [HomeController::class, 'getDestinations'])->name('api.destinations');
+Route::get('/api/search', [HomeController::class, 'searchAjax'])->name('api.search');
 
 // Booking Routes
 Route::middleware(['auth'])->prefix('booking')->name('booking.')->group(function () {
