@@ -21,9 +21,26 @@ Route::middleware(['auth'])->prefix('booking')->name('booking.')->group(function
     Route::get('/availability', [BookingController::class, 'checkAvailability'])->name('availability');
     Route::get('/form', [BookingController::class, 'showBookingForm'])->name('form');
     Route::post('/submit', [BookingController::class, 'submitBooking'])->name('submit');
+    Route::get('/payment/{booking}', [BookingController::class, 'showPaymentForm'])->name('payment');
     Route::get('/confirmation/{booking}', [BookingController::class, 'confirmation'])->name('confirmation');
     Route::post('/cancel/{booking}', [BookingController::class, 'cancel'])->name('cancel');
     Route::get('/details/{booking}', [BookingController::class, 'getBookingDetails'])->name('details');
+});
+
+// Payment API Routes
+Route::middleware(['auth'])->prefix('api')->name('api.')->group(function () {
+    Route::post('/bookings/{booking}/payment-intent', [App\Http\Controllers\Frontend\PaymentController::class, 'createPaymentIntent'])->name('bookings.payment-intent');
+    Route::post('/payments/confirm', [App\Http\Controllers\Frontend\PaymentController::class, 'confirmPayment'])->name('payments.confirm');
+    Route::post('/payments/failed', [App\Http\Controllers\Frontend\PaymentController::class, 'paymentFailed'])->name('payments.failed');
+    Route::get('/bookings/{booking}/payment-status', [App\Http\Controllers\Frontend\PaymentController::class, 'getPaymentStatus'])->name('bookings.payment-status');
+});
+
+// Stripe Webhook (no auth middleware)
+Route::post('/stripe/webhook', [App\Http\Controllers\Frontend\PaymentController::class, 'handleWebhook'])->name('stripe.webhook');
+
+// Admin Payment Management Routes
+Route::middleware(['auth', 'role:super_admin|hotel_manager'])->prefix('admin')->name('admin.')->group(function () {
+    Route::post('/bookings/{booking}/refund', [App\Http\Controllers\Frontend\PaymentController::class, 'processRefund'])->name('bookings.refund');
 });
 
 Route::get('/showcase', function () {

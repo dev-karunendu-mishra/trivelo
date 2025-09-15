@@ -200,9 +200,9 @@ class BookingController extends Controller
 
             DB::commit();
 
-            // Redirect to booking confirmation
-            return redirect()->route('booking.confirmation', $booking->id)
-                ->with('success', 'Booking created successfully! Please complete payment to confirm your reservation.');
+            // Redirect to payment form
+            return redirect()->route('booking.payment', $booking->id)
+                ->with('success', 'Booking details saved! Please complete payment to confirm your reservation.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -211,6 +211,25 @@ class BookingController extends Controller
                 ->with('error', 'There was an error processing your booking. Please try again.')
                 ->withInput();
         }
+    }
+
+    /**
+     * Show payment form for booking
+     */
+    public function showPaymentForm($bookingId)
+    {
+        $booking = Booking::with(['hotel.location', 'room', 'user'])
+            ->where('id', $bookingId)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Check if booking is in correct status for payment
+        if ($booking->payment_status !== 'pending') {
+            return redirect()->route('booking.confirmation', $booking->id)
+                ->with('info', 'This booking has already been processed.');
+        }
+
+        return view('frontend.booking.payment', compact('booking'));
     }
 
     /**

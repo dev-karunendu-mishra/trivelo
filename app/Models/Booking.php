@@ -209,6 +209,34 @@ class Booking extends Model
         return $this->check_out_date->diffInDays(now(), false);
     }
 
+    public function getGuestNameAttribute(): string
+    {
+        $guestDetails = $this->guest_details ?? [];
+        return trim(($guestDetails['first_name'] ?? '') . ' ' . ($guestDetails['last_name'] ?? ''));
+    }
+
+    public function getGuestEmailAttribute(): string
+    {
+        $guestDetails = $this->guest_details ?? [];
+        return $guestDetails['email'] ?? '';
+    }
+
+    public function getGuestPhoneAttribute(): string
+    {
+        $guestDetails = $this->guest_details ?? [];
+        return $guestDetails['phone'] ?? '';
+    }
+
+    public function getNumberOfGuestsAttribute(): int
+    {
+        return $this->adults + $this->children;
+    }
+
+    public function getSubtotalAmountAttribute(): float
+    {
+        return $this->subtotal;
+    }
+
     // Helper Methods
 
     public function isPending(): bool

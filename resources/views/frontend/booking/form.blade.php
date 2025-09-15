@@ -25,11 +25,11 @@
                                 <div class="step-icon">✓</div>
                                 <div class="step-label">Select Room</div>
                             </div>
-                            <div class="step active">
+                            <div class="step {{ request('step') === 'payment' ? 'active' : (request()->routeIs('booking.payment') ? '' : 'active') }}">
                                 <div class="step-icon">2</div>
                                 <div class="step-label">Guest Details</div>
                             </div>
-                            <div class="step">
+                            <div class="step {{ request('step') === 'payment' || request()->routeIs('booking.payment') ? 'active' : '' }}">
                                 <div class="step-icon">3</div>
                                 <div class="step-label">Payment</div>
                             </div>
