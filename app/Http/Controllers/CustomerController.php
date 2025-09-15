@@ -11,14 +11,18 @@ use App\Models\Review;
 use App\Models\Hotel;
 use App\Models\UserFavorite;
 use App\Models\Notification;
+use App\Services\EmailService;
 use Carbon\Carbon;
 
 class CustomerController extends Controller
 {
-    public function __construct()
+    protected EmailService $emailService;
+
+    public function __construct(EmailService $emailService)
     {
         $this->middleware('auth');
         $this->middleware('role:customer');
+        $this->emailService = $emailService;
     }
 
     /**
@@ -173,6 +177,10 @@ class CustomerController extends Controller
         $refundAmount = $booking->calculateRefundAmount();
         $booking->refund_amount = $refundAmount;
         $booking->cancel($request->cancellation_reason);
+
+        // Send cancellation email
+        $booking->load(['user', 'hotel', 'room']);
+        $this->emailService->sendBookingCancellation($booking, $refundAmount);
         
         return redirect()->route('customer.bookings')
             ->with('success', 'Booking cancelled successfully.' .

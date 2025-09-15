@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Services\PaymentService;
+use App\Services\EmailService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -15,10 +16,12 @@ use Illuminate\Support\Facades\Auth;
 class PaymentController extends Controller
 {
     protected PaymentService $paymentService;
+    protected EmailService $emailService;
 
-    public function __construct(PaymentService $paymentService)
+    public function __construct(PaymentService $paymentService, EmailService $emailService)
     {
         $this->paymentService = $paymentService;
+        $this->emailService = $emailService;
     }
 
     /**
@@ -92,6 +95,16 @@ class PaymentController extends Controller
             );
 
             if ($result['success']) {
+                // Send confirmation and receipt emails
+                $booking = $result['booking']->load(['user', 'hotel', 'room']);
+                $payment = $result['payment'];
+                
+                // Send booking confirmation email
+                $this->emailService->sendBookingConfirmation($booking);
+                
+                // Send payment receipt email
+                $this->emailService->sendPaymentReceipt($payment, $booking);
+
                 DB::commit();
 
                 return response()->json([
@@ -358,6 +371,15 @@ class PaymentController extends Controller
                 'payment_status' => 'paid',
                 'booking_status' => 'confirmed',
             ]);
+
+            // Send confirmation and receipt emails if not already sent
+            $booking->load(['user', 'hotel', 'room']);
+            
+            // Send booking confirmation email
+            $this->emailService->sendBookingConfirmation($booking);
+            
+            // Send payment receipt email
+            $this->emailService->sendPaymentReceipt($payment, $booking);
 
             Log::info('Payment confirmed via webhook', [
                 'booking_id' => $booking->id,

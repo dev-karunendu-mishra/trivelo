@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Mail;
+
+use App\Models\Payment;
+use App\Models\Booking;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Queue\SerializesModels;
+
+class PaymentReceiptMail extends Mailable implements ShouldQueue
+{
+    use Queueable, SerializesModels;
+
+    public $payment;
+    public $booking;
+
+    /**
+     * Create a new message instance.
+     */
+    public function __construct(Payment $payment, Booking $booking)
+    {
+        $this->payment = $payment;
+        $this->booking = $booking;
+    }
+
+    /**
+     * Get the message envelope.
+     */
+    public function envelope(): Envelope
+    {
+        return new Envelope(
+            subject: 'Payment Receipt - ' . $this->booking->hotel->name,
+            to: [$this->booking->user->email],
+        );
+    }
+
+    /**
+     * Get the message content definition.
+     */
+    public function content(): Content
+    {
+        return new Content(
+            markdown: 'emails.payments.receipt',
+            with: [
+                'payment' => $this->payment,
+                'booking' => $this->booking,
+                'user' => $this->booking->user,
+                'hotel' => $this->booking->hotel,
+                'room' => $this->booking->room,
+            ],
+        );
+    }
+
+    /**
+     * Get the attachments for the message.
+     *
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     */
+    public function attachments(): array
+    {
+        return [];
+    }
+}

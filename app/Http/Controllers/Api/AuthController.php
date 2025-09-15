@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Services\EmailService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -10,6 +11,12 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends BaseApiController
 {
+    protected EmailService $emailService;
+
+    public function __construct(EmailService $emailService)
+    {
+        $this->emailService = $emailService;
+    }
     /**
      * @OA\Post(
      *     path="/api/auth/login",
@@ -215,6 +222,9 @@ class AuthController extends BaseApiController
         // Assign role (default: customer)
         $role = $request->input('role', 'customer');
         $user->assignRole($role);
+
+        // Send welcome email
+        $this->emailService->sendWelcomeEmail($user);
 
         $token = $user->createToken('auth-token')->plainTextToken;
 

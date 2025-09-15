@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Hotel;
 use App\Models\Room;
 use App\Models\Booking;
+use App\Services\EmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,12 @@ use Carbon\Carbon;
 
 class BookingController extends Controller
 {
+    protected EmailService $emailService;
+
+    public function __construct(EmailService $emailService)
+    {
+        $this->emailService = $emailService;
+    }
     /**
      * Show room availability and pricing
      */
@@ -271,6 +278,10 @@ class BookingController extends Controller
             
             // Cancel booking
             $booking->cancel($request->cancellation_reason);
+
+            // Send cancellation email
+            $booking->load(['user', 'hotel', 'room']);
+            $this->emailService->sendBookingCancellation($booking, $refundAmount);
 
             // If there's a refund, it would be processed here
             // For now, we'll just update the booking status
