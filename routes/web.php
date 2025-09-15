@@ -97,11 +97,45 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 // Hotel Manager Routes
-Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name('hotel-manager.')->group(function () {
+Route::middleware(['auth', 'hotel_manager'])->prefix('hotel-manager')->name('hotel-manager.')->group(function () {
+    // Dashboard
     Route::get('/dashboard', [HotelManagerController::class, 'dashboard'])->name('dashboard');
+    
+    // Hotel Management
     Route::get('/hotel', [HotelManagerController::class, 'hotel'])->name('hotel');
+    Route::get('/hotel/create', function() { return view('hotel-manager.hotel.create'); })->name('hotel.create');
+    Route::get('/hotel/edit', function() { return view('hotel-manager.hotel.edit'); })->name('hotel.edit');
+    
+    // Room Management
     Route::get('/rooms', [HotelManagerController::class, 'rooms'])->name('rooms');
+    Route::get('/rooms/create', function() { return view('hotel-manager.rooms.create'); })->name('rooms.create');
+    
+    // Booking Management
     Route::get('/bookings', [HotelManagerController::class, 'bookings'])->name('bookings');
+    Route::get('/bookings/manual', function() { return view('hotel-manager.bookings.manual'); })->name('bookings.manual');
+    
+    // Analytics & Reports
+    Route::get('/analytics', [HotelManagerController::class, 'analytics'])->name('analytics');
+    
+    // Guest Management
+    Route::get('/guests', [HotelManagerController::class, 'guests'])->name('guests');
+    Route::get('/guests/checkin', function() { return view('hotel-manager.guests.checkin'); })->name('guests.checkin');
+    Route::get('/guests/checkout', function() { return view('hotel-manager.guests.checkout'); })->name('guests.checkout');
+    
+    // Reviews Management
+    Route::get('/reviews', function() { return view('hotel-manager.reviews.index'); })->name('reviews');
+    
+    // Calendar
+    Route::get('/calendar', function() { return view('hotel-manager.calendar.index'); })->name('calendar');
+    
+    // Communications
+    Route::get('/communications', function() { return view('hotel-manager.communications.index'); })->name('communications');
+    Route::get('/maintenance/report', function() { return view('hotel-manager.maintenance.report'); })->name('maintenance.report');
+    
+    // Settings & Profile
+    Route::get('/settings', function() { return view('hotel-manager.settings.index'); })->name('settings');
+    Route::get('/profile', function() { return view('hotel-manager.profile.index'); })->name('profile');
+    Route::get('/help', function() { return view('hotel-manager.help.index'); })->name('help');
 });
 
 // Customer Routes

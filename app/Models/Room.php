@@ -34,6 +34,7 @@ class Room extends Model
         'is_available',
         'is_active',
         'floor_number',
+        'status',
     ];
 
     protected $casts = [
@@ -115,6 +116,16 @@ class Room extends Model
     public function scopeOnFloor($query, $floor)
     {
         return $query->where('floor_number', $floor);
+    }
+
+    public function scopeOccupied($query)
+    {
+        $today = now()->toDateString();
+        return $query->whereHas('bookings', function($q) use ($today) {
+            $q->where('check_in', '<=', $today)
+              ->where('check_out', '>', $today)
+              ->where('status', '!=', 'cancelled');
+        });
     }
 
     // Accessors & Mutators
