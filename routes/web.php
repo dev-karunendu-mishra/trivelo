@@ -73,8 +73,32 @@ Route::middleware(['auth', 'role:hotel_manager'])->prefix('hotel-manager')->name
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
     Route::get('/dashboard', [CustomerController::class, 'dashboard'])->name('dashboard');
     Route::get('/bookings', [CustomerController::class, 'bookings'])->name('bookings');
+    Route::get('/bookings/{booking}', [CustomerController::class, 'showBooking'])->name('booking.show');
+    Route::post('/bookings/{booking}/cancel', [CustomerController::class, 'cancelBooking'])->name('booking.cancel');
+    
+    // Profile management
     Route::get('/profile', [CustomerController::class, 'profile'])->name('profile');
-    Route::patch('/profile', [CustomerController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile', [CustomerController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/preferences', [CustomerController::class, 'updatePreferences'])->name('preferences.update');
+    Route::put('/profile/password', [CustomerController::class, 'updatePassword'])->name('password.update');
+    Route::post('/profile/picture', [CustomerController::class, 'updateProfilePicture'])->name('profile.picture');
+    
+    // Reviews
+    Route::get('/reviews', [CustomerController::class, 'reviews'])->name('reviews');
+    Route::get('/reviews/create/{booking}', [CustomerController::class, 'createReview'])->name('reviews.create');
+    Route::post('/reviews/{booking}', [CustomerController::class, 'storeReview'])->name('reviews.store');
+    
+    // Wishlist/Favorites
+    Route::get('/wishlist', [CustomerController::class, 'wishlist'])->name('wishlist');
+    Route::post('/wishlist/add', [CustomerController::class, 'addToWishlist'])->name('wishlist.add');
+    Route::post('/wishlist/remove', [CustomerController::class, 'removeFromWishlist'])->name('wishlist.remove');
+    
+    // Notifications
+    Route::get('/notifications', [CustomerController::class, 'notifications'])->name('notifications');
+    Route::post('/notifications/{notification}/read', [CustomerController::class, 'markNotificationAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [CustomerController::class, 'markAllNotificationsAsRead'])->name('notifications.read-all');
+    Route::delete('/notifications/{notification}', [CustomerController::class, 'deleteNotification'])->name('notifications.delete');
+    Route::get('/notifications/count', [CustomerController::class, 'getUnreadNotificationsCount'])->name('notifications.count');
 });
 
 Route::middleware('auth')->group(function () {

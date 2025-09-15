@@ -116,6 +116,38 @@ class User extends Authenticatable
     }
 
     /**
+     * User has many notifications
+     */
+    public function notifications(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    /**
+     * Get unread notifications count
+     */
+    public function getUnreadNotificationsCountAttribute(): int
+    {
+        return $this->notifications()->unread()->count();
+    }
+
+    /**
+     * User has many favorite hotels
+     */
+    public function favorites(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(UserFavorite::class);
+    }
+
+    /**
+     * Get user's favorite hotels (direct relationship)
+     */
+    public function favoriteHotels(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Hotel::class, 'user_favorites');
+    }
+
+    /**
      * Get user's active bookings
      */
     public function activeBookings()

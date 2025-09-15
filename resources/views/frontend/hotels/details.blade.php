@@ -35,7 +35,23 @@
                                 @endif
                             </div>
                             
-                            <h1 class="mb-2">{{ $hotel->name }}</h1>
+                            <h1 class="mb-2 d-flex align-items-center">
+                                {{ $hotel->name }}
+                                
+                                @auth
+                                    @php
+                                        $isFavorite = auth()->user()->favoriteHotels()->where('hotel_id', $hotel->id)->exists();
+                                    @endphp
+                                    <button type="button" 
+                                            class="btn btn-outline-danger ms-3 wishlist-btn-details"
+                                            onclick="toggleWishlist({{ $hotel->id }})"
+                                            data-hotel-id="{{ $hotel->id }}"
+                                            title="{{ $isFavorite ? 'Remove from wishlist' : 'Add to wishlist' }}">
+                                        <i class="bi bi-heart{{ $isFavorite ? '-fill' : '' }}"></i>
+                                        <span class="d-none d-md-inline ms-1">{{ $isFavorite ? 'Remove from Wishlist' : 'Add to Wishlist' }}</span>
+                                    </button>
+                                @endauth
+                            </h1>
                             <p class="text-muted mb-2">
                                 <i class="bi bi-geo-alt"></i>
                                 {{ $hotel->location->full_address ?? $hotel->full_address }}
@@ -567,6 +583,98 @@ document.addEventListener('DOMContentLoaded', function() {
 function showAllRooms() {
     // This would typically show a modal or expand the room list
     alert('Show all rooms functionality would be implemented here');
+}
+
+// Wishlist functionality
+function toggleWishlist(hotelId) {
+    @guest
+        alert('Please login to add hotels to your wishlist.');
+        return;
+    @endguest
+    
+    @auth
+        const button = document.querySelector(`[data-hotel-id="${hotelId}"]`);
+        const icon = button.querySelector('i');
+        const text = button.querySelector('span');
+        
+        // Check if hotel is currently in wishlist
+        const isInWishlist = icon.classList.contains('bi-heart-fill');
+        const url = isInWishlist ? '{{ route("customer.wishlist.remove") }}' : '{{ route("customer.wishlist.add") }}';
+        const method = 'POST';
+        
+        // Disable button during request
+        button.disabled = true;
+        
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                hotel_id: hotelId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update button appearance
+                if (isInWishlist) {
+                    // Was in wishlist, now removed
+                    icon.classList.remove('bi-heart-fill');
+                    icon.classList.add('bi-heart');
+                    button.title = 'Add to wishlist';
+                    if (text) text.textContent = 'Add to Wishlist';
+                    button.classList.remove('btn-danger');
+                    button.classList.add('btn-outline-danger');
+                } else {
+                    // Wasn't in wishlist, now added
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill');
+                    button.title = 'Remove from wishlist';
+                    if (text) text.textContent = 'Remove from Wishlist';
+                    button.classList.remove('btn-outline-danger');
+                    button.classList.add('btn-danger');
+                }
+                
+                // Show success message
+                showWishlistAlert('success', data.message);
+            } else {
+                showWishlistAlert('error', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showWishlistAlert('error', 'Something went wrong. Please try again.');
+        })
+        .finally(() => {
+            // Re-enable button
+            button.disabled = false;
+        });
+    @endauth
+}
+
+function showWishlistAlert(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+             style="top: 20px; right: 20px; z-index: 9999; max-width: 350px;" 
+             role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', alertHtml);
+    
+    // Auto dismiss after 3 seconds
+    setTimeout(() => {
+        const alert = document.querySelector('.alert');
+        if (alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }
+    }, 3000);
 }
 </script>
 @endpush
