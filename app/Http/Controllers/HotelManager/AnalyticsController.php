@@ -15,8 +15,6 @@ class AnalyticsController extends Controller
 
     public function __construct(AnalyticsService $analyticsService)
     {
-        $this->middleware('auth');
-        $this->middleware('role:hotel-manager');
         $this->analyticsService = $analyticsService;
     }
 

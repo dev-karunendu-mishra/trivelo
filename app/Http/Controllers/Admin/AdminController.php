@@ -18,8 +18,7 @@ class AdminController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
-        $this->middleware('admin');
+        // Middleware is handled in routes
     }
 
     /**
@@ -69,8 +68,8 @@ class AdminController extends Controller
 
         // Occupancy rate (simplified calculation)
         $totalRooms = DB::table('rooms')->count();
-        $occupiedRooms = Booking::where('check_in', '<=', Carbon::now())
-                               ->where('check_out', '>=', Carbon::now())
+        $occupiedRooms = Booking::where('check_in_date', '<=', Carbon::now())
+                               ->where('check_out_date', '>=', Carbon::now())
                                ->where('status', 'confirmed')
                                ->count();
         $occupancyRate = $totalRooms > 0 ? ($occupiedRooms / $totalRooms) * 100 : 0;

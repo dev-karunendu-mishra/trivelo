@@ -65,7 +65,7 @@ class User extends Authenticatable
      */
     public function isSuperAdmin(): bool
     {
-        return $this->hasRole('super_admin');
+        return $this->role === 'admin' || $this->getRoleNames()->contains('super_admin');
     }
 
     /**
@@ -73,7 +73,7 @@ class User extends Authenticatable
      */
     public function isHotelManager(): bool
     {
-        return $this->hasRole('hotel_manager');
+        return $this->role === 'hotel_manager' || $this->getRoleNames()->contains('hotel_manager');
     }
 
     /**
@@ -81,7 +81,7 @@ class User extends Authenticatable
      */
     public function isCustomer(): bool
     {
-        return $this->hasRole('customer');
+        return $this->role === 'customer' || $this->getRoleNames()->contains('customer');
     }
 
     // Model Relationships

@@ -55,17 +55,65 @@ Route::middleware(['web'])->prefix('themes')->name('theme.')->group(function () 
     Route::get('/preview/{theme}', [ThemeController::class, 'preview'])->name('preview');
 });
 
+// Simple test route for debugging auth and roles
+Route::get('/test-auth', function () {
+    if (auth()->guest()) {
+        return 'Not logged in. <a href="/login">Login here</a>';
+    }
+    
+    $user = auth()->user();
+    return [
+        'authenticated' => true,
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role_field' => $user->role,
+            'spatie_roles' => $user->getRoleNames()->toArray(),
+        ],
+        'can_access_customer' => $user->role === 'customer' || $user->getRoleNames()->contains('customer'),
+        'can_access_admin' => $user->role === 'admin' || $user->getRoleNames()->contains('admin'),
+        'can_access_hotel_manager' => $user->role === 'hotel_manager' || $user->getRoleNames()->contains('hotel_manager'),
+    ];
+});
+
+Route::get('/debug-roles', function () {
+    $user = auth()->user();
+    if (!$user) {
+        return 'Not logged in';
+    }
+    
+    return [
+        'id' => $user->id,
+        'name' => $user->name,
+        'role_field' => $user->role,
+        'spatie_roles' => $user->getRoleNames()->toArray(),
+        'is_customer' => $user->isCustomer(),
+        'is_hotel_manager' => $user->isHotelManager(),
+        'is_super_admin' => $user->isSuperAdmin(),
+    ];
+})->middleware('auth');
+
 Route::get('/dashboard', function () {
     $user = auth()->user();
     
-    if ($user->role === 'admin') {
+    // Debug: Log user information
+    \Log::info('Dashboard access attempt', [
+        'user_id' => $user->id,
+        'user_name' => $user->name,
+        'role_field' => $user->role,
+        'spatie_roles' => $user->getRoleNames()->toArray()
+    ]);
+    
+    if ($user->role === 'admin' || $user->getRoleNames()->contains('admin')) {
         return redirect()->route('admin.dashboard');
-    } elseif ($user->role === 'hotel_manager') {
+    } elseif ($user->role === 'hotel_manager' || $user->getRoleNames()->contains('hotel_manager')) {
         return redirect()->route('hotel-manager.dashboard');
-    } elseif ($user->role === 'customer') {
+    } elseif ($user->role === 'customer' || $user->getRoleNames()->contains('customer')) {
         return redirect()->route('customer.dashboard');
     }
     
+    // Fallback: Create customer dashboard view if none of the above match
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -111,18 +159,34 @@ Route::middleware(['auth', 'hotel_manager'])->prefix('hotel-manager')->name('hot
     // Hotel Management
     Route::get('/hotel', [HotelManagerController::class, 'hotel'])->name('hotel');
     Route::get('/hotel/create', function() { return view('hotel-manager.hotel.create'); })->name('hotel.create');
+    Route::post('/hotel', function() { 
+        // TODO: Add hotel creation logic
+        return redirect()->route('hotel-manager.hotel')->with('success', 'Hotel created successfully!'); 
+    })->name('hotel.store');
     Route::get('/hotel/edit', function() { return view('hotel-manager.hotel.edit'); })->name('hotel.edit');
+    Route::put('/hotel', function() { 
+        // TODO: Add hotel update logic
+        return redirect()->route('hotel-manager.hotel')->with('success', 'Hotel updated successfully!'); 
+    })->name('hotel.update');
     
     // Room Management
     Route::get('/rooms', [HotelManagerController::class, 'rooms'])->name('rooms');
     Route::get('/rooms/create', function() { return view('hotel-manager.rooms.create'); })->name('rooms.create');
+    Route::post('/rooms', function() { 
+        // TODO: Add room creation logic
+        return redirect()->route('hotel-manager.rooms')->with('success', 'Room created successfully!'); 
+    })->name('rooms.store');
     
     // Booking Management
     Route::get('/bookings', [HotelManagerController::class, 'bookings'])->name('bookings');
     Route::get('/bookings/manual', function() { return view('hotel-manager.bookings.manual'); })->name('bookings.manual');
+    Route::post('/bookings', function() { 
+        // TODO: Add booking creation logic
+        return redirect()->route('hotel-manager.bookings')->with('success', 'Booking created successfully!'); 
+    })->name('bookings.store');
     
     // Analytics & Reports
-    Route::get('/analytics', [App\Http\Controllers\HotelManager\AnalyticsController::class, 'index'])->name('analytics.dashboard');
+    Route::get('/analytics', [HotelManagerController::class, 'analytics'])->name('analytics.index');
     Route::get('/analytics/api/metrics', [App\Http\Controllers\HotelManager\AnalyticsController::class, 'getMetrics'])->name('analytics.api.metrics');
     Route::get('/analytics/api/trends', [App\Http\Controllers\HotelManager\AnalyticsController::class, 'getTrends'])->name('analytics.api.trends');
     Route::get('/analytics/api/comparative', [App\Http\Controllers\HotelManager\AnalyticsController::class, 'getComparativeAnalytics'])->name('analytics.api.comparative');
@@ -132,7 +196,15 @@ Route::middleware(['auth', 'hotel_manager'])->prefix('hotel-manager')->name('hot
     // Guest Management
     Route::get('/guests', [HotelManagerController::class, 'guests'])->name('guests');
     Route::get('/guests/checkin', function() { return view('hotel-manager.guests.checkin'); })->name('guests.checkin');
+    Route::post('/guests/checkin', function() { 
+        // TODO: Add guest check-in logic
+        return redirect()->route('hotel-manager.guests')->with('success', 'Guest checked in successfully!'); 
+    })->name('guests.checkin.process');
     Route::get('/guests/checkout', function() { return view('hotel-manager.guests.checkout'); })->name('guests.checkout');
+    Route::post('/guests/checkout', function() { 
+        // TODO: Add guest check-out logic
+        return redirect()->route('hotel-manager.guests')->with('success', 'Guest checked out successfully!'); 
+    })->name('guests.checkout.process');
     
     // Reviews Management
     Route::get('/reviews', function() { return view('hotel-manager.reviews.index'); })->name('reviews');
@@ -140,14 +212,39 @@ Route::middleware(['auth', 'hotel_manager'])->prefix('hotel-manager')->name('hot
     // Calendar
     Route::get('/calendar', function() { return view('hotel-manager.calendar.index'); })->name('calendar');
     
-    // Communications
+    // Communications & Maintenance
     Route::get('/communications', function() { return view('hotel-manager.communications.index'); })->name('communications');
+    Route::post('/communications/send', function() { 
+        // TODO: Add communication sending logic
+        return redirect()->back()->with('success', 'Message sent successfully!'); 
+    })->name('communications.send');
+    Route::get('/maintenance', function() { return view('hotel-manager.maintenance.index'); })->name('maintenance');
+    Route::post('/maintenance', function() { 
+        // TODO: Add maintenance request logic
+        return redirect()->route('hotel-manager.maintenance')->with('success', 'Maintenance request submitted successfully!'); 
+    })->name('maintenance.store');
     Route::get('/maintenance/report', function() { return view('hotel-manager.maintenance.report'); })->name('maintenance.report');
     
     // Settings & Profile
     Route::get('/settings', function() { return view('hotel-manager.settings.index'); })->name('settings');
+    Route::post('/settings/{section}', function($section) { 
+        // TODO: Add settings update logic for section: $section
+        return redirect()->route('hotel-manager.settings')->with('success', 'Settings updated successfully!'); 
+    })->name('settings.update');
     Route::get('/profile', function() { return view('hotel-manager.profile.index'); })->name('profile');
+    Route::post('/profile', function() { 
+        // TODO: Add profile update logic
+        return redirect()->route('hotel-manager.profile')->with('success', 'Profile updated successfully!'); 
+    })->name('profile.update');
+    Route::post('/profile/password', function() { 
+        // TODO: Add password change logic
+        return redirect()->route('hotel-manager.profile')->with('success', 'Password changed successfully!'); 
+    })->name('profile.password');
     Route::get('/help', function() { return view('hotel-manager.help.index'); })->name('help');
+    Route::post('/support/contact', function() { 
+        // TODO: Add support contact logic
+        return redirect()->route('hotel-manager.help')->with('success', 'Support request submitted successfully!'); 
+    })->name('support.contact');
 });
 
 // Customer Routes

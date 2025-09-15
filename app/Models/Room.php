@@ -122,8 +122,8 @@ class Room extends Model
     {
         $today = now()->toDateString();
         return $query->whereHas('bookings', function($q) use ($today) {
-            $q->where('check_in', '<=', $today)
-              ->where('check_out', '>', $today)
+            $q->where('check_in_date', '<=', $today)
+              ->where('check_out_date', '>', $today)
               ->where('status', '!=', 'cancelled');
         });
     }

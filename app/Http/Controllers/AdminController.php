@@ -11,7 +11,7 @@ class AdminController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:super_admin');
+        // Middleware is handled in routes
     }
 
     /**

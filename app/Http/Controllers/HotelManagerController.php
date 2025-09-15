@@ -81,8 +81,8 @@ class HotelManagerController extends Controller
         }
         
         $rooms = $hotel->rooms()->with(['bookings' => function($query) {
-            $query->where('check_in', '<=', Carbon::today())
-                  ->where('check_out', '>=', Carbon::today())
+            $query->where('check_in_date', '<=', Carbon::today())
+                  ->where('check_out_date', '>=', Carbon::today())
                   ->where('status', '!=', 'cancelled');
         }])->paginate(20);
         
@@ -175,8 +175,8 @@ class HotelManagerController extends Controller
         
         $totalRooms = $hotel->rooms()->count();
         $occupiedRooms = $hotel->rooms()->whereHas('bookings', function($query) use ($today) {
-            $query->where('check_in', '<=', $today)
-                  ->where('check_out', '>', $today)
+            $query->where('check_in_date', '<=', $today)
+                  ->where('check_out_date', '>', $today)
                   ->where('status', '!=', 'cancelled');
         })->count();
         
@@ -244,7 +244,7 @@ class HotelManagerController extends Controller
         return Booking::whereHas('room', function($query) use ($hotel) {
                 $query->where('hotel_id', $hotel->id);
             })
-            ->where('check_in', Carbon::today())
+            ->where('check_in_date', Carbon::today())
             ->where('status', 'confirmed')
             ->with(['user', 'room'])
             ->get();

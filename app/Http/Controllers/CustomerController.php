@@ -20,8 +20,6 @@ class CustomerController extends Controller
 
     public function __construct(EmailService $emailService)
     {
-        $this->middleware('auth');
-        $this->middleware('role:customer');
         $this->emailService = $emailService;
     }
 
